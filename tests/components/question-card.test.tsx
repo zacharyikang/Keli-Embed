@@ -103,4 +103,19 @@ describe("QuestionCard", () => {
     renderCard({ question: codeQ });
     expect(screen.getAllByText("读代码").length).toBeGreaterThanOrEqual(1);
   });
+
+  it("shows flip back hint and triggers onFlip when flipped is true", () => {
+    const onFlip = vi.fn();
+    render(
+      <QuestionCard
+        question={testQuestion}
+        card={testCard}
+        flipped={true}
+        onFlip={onFlip}
+      />
+    );
+    expect(screen.getByText("点击返回题目")).toBeDefined();
+    fireEvent.click(screen.getByText("点击返回题目"));
+    expect(onFlip).toHaveBeenCalledOnce();
+  });
 });

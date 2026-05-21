@@ -41,7 +41,7 @@ export function PracticeClient() {
   const progress = total > 0 ? Math.round((index / total) * 100) : 0;
 
   const handleFlip = useCallback(() => {
-    setFlipped(true);
+    setFlipped(prev => !prev);
   }, []);
 
   const handleRate = useCallback(
@@ -70,7 +70,7 @@ export function PracticeClient() {
 
       if (e.key === " " || e.code === "Space") {
         e.preventDefault();
-        if (!flipped) handleFlip();
+        handleFlip();
         return;
       }
 

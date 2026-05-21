@@ -49,10 +49,8 @@ function QuestionMeta({ question }: { question: Question }) {
 
 export function QuestionCard({ question, flipped, onFlip }: Props) {
   const handleClick = useCallback(() => {
-    if (!flipped) {
-      onFlip?.();
-    }
-  }, [flipped, onFlip]);
+    onFlip?.();
+  }, [onFlip]);
 
   const frontRenderer = useMemo(() => {
     switch (question.type) {
@@ -111,7 +109,10 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
         </Card>
 
         {/* Back */}
-        <Card className="flip-face flip-back h-full glass glass-dark rounded-2xl border-2 border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)]">
+        <Card 
+          className="flip-face flip-back cursor-pointer select-none h-full glass glass-dark rounded-2xl border-2 border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)] transition-all duration-500 hover:border-brand/40 group"
+          onClick={handleClick}
+        >
           <CardHeader className="p-5 md:p-6 pb-3 md:pb-4">
             <QuestionMeta question={question} />
             <CardTitle className="text-lg md:text-xl font-bold leading-tight text-brand">{question.title}</CardTitle>
@@ -120,6 +121,14 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
             <div className="leading-relaxed">
               {backRenderer}
             </div>
+            {flipped && (
+              <div className="mt-6 flex flex-col items-center gap-1.5">
+                 <div className="h-px w-10 bg-brand/20" />
+                 <p className="text-[10px] text-brand/60 font-medium uppercase tracking-widest">
+                  点击返回题目
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
