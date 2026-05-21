@@ -84,11 +84,11 @@ export function WeakClient() {
 
   if (loading || fetching) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-12 animate-slide-up">
-        <h1 className="text-3xl font-black tracking-tighter mb-8">薄弱点分析.</h1>
-        <div className="flex flex-col gap-4">
+      <div className="max-w-4xl mx-auto px-6 py-8 animate-slide-up">
+        <h1 className="text-xl md:text-2xl font-black tracking-tighter mb-6">薄弱点分析.</h1>
+        <div className="flex flex-col gap-3">
           {[...Array(3)].map((_, i) => (
-            <Card key={i} className="animate-pulse glass glass-dark rounded-2xl h-24" />
+            <Card key={i} className="animate-pulse glass glass-dark rounded-xl h-20" />
           ))}
         </div>
       </div>
@@ -116,40 +116,40 @@ export function WeakClient() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 animate-slide-up">
-      <div className="flex items-end justify-between mb-12 border-b border-foreground/5 pb-8">
+    <div className="max-w-4xl mx-auto px-6 py-8 animate-slide-up">
+      <div className="flex items-end justify-between mb-8 border-b border-foreground/5 pb-4">
         <div className="space-y-1">
-           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand bg-brand/10 w-fit px-3 py-1 rounded-full">Weakness Diagnostic</span>
-           <h1 className="text-4xl font-black tracking-tighter">薄弱环节清单.</h1>
+           <span className="text-[9px] font-black uppercase tracking-[0.4em] text-brand bg-brand/10 w-fit px-2.5 py-0.5 rounded-full">Weakness Diagnostic</span>
+           <h1 className="text-2xl md:text-3xl font-black tracking-tighter">薄弱环节清单.</h1>
         </div>
         {items.length > 0 && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setSortKey(sortKey === "date" ? "difficulty" : "date")}
-            className="rounded-full px-6 border border-foreground/10 font-black uppercase tracking-widest text-[10px] h-10 hover:bg-foreground hover:text-background transition-all"
+            className="rounded-full px-5 border border-foreground/10 font-black uppercase tracking-widest text-[9px] h-9 hover:bg-foreground hover:text-background transition-all"
           >
-            <ArrowUpDown className="size-3 mr-2" />
+            <ArrowUpDown className="size-3 mr-1.5" />
             {sortKey === "date" ? "SORT BY DATE" : "SORT BY DIFFICULTY"}
           </Button>
         )}
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 text-sm text-destructive font-bold mb-8 flex items-center gap-3">
-          <div className="size-2 rounded-full bg-destructive animate-pulse" />
+        <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-xs text-destructive font-bold mb-6 flex items-center gap-3">
+          <div className="size-1.5 rounded-full bg-destructive animate-pulse" />
           {error}
         </div>
       )}
 
       {!error && items.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 gap-6 text-center">
-          <div className="size-16 flex items-center justify-center rounded-full bg-foreground/5 text-foreground/20">
-             <Star className="size-8" />
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <div className="size-12 flex items-center justify-center rounded-full bg-foreground/5 text-foreground/20">
+             <Star className="size-6" />
           </div>
           <div className="space-y-1">
-             <p className="text-xl font-black tracking-tight">目前系统库中无薄弱标记</p>
-             <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold opacity-40">
+             <p className="text-lg font-black tracking-tight">目前系统库中无薄弱标记</p>
+             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-40">
                Mark questions during review for isolation.
              </p>
           </div>
@@ -157,32 +157,32 @@ export function WeakClient() {
       )}
 
       {!error && items.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {sorted.map(({ question, card }) => (
             <a
               key={question.id}
               href={`/q/${question.id}`}
               className="block group"
             >
-              <Card className="glass glass-dark rounded-2xl border-2 border-foreground/5 hover:border-brand/40 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-brand/5">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between gap-6">
-                    <div className="flex-1 min-w-0 space-y-3">
-                      <div className="flex items-center gap-3 flex-wrap">
+              <Card className="glass glass-dark rounded-xl border-2 border-foreground/5 hover:border-brand/40 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-brand/5">
+                <CardContent className="p-4 md:p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0 space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Badge
                           variant="default"
-                          className="text-[9px] font-black uppercase tracking-widest bg-foreground text-background px-3"
+                          className="text-[8px] font-black uppercase tracking-widest bg-foreground text-background px-2.5"
                         >
                           {difficultyLabel[question.difficulty] ?? question.difficulty}
                         </Badge>
-                        <Badge variant="outline" className="text-[9px] font-bold uppercase tracking-widest border-foreground/10 text-foreground/40">
+                        <Badge variant="outline" className="text-[8px] font-bold uppercase tracking-widest border-foreground/10 text-foreground/40">
                           {question.direction}
                         </Badge>
                       </div>
-                      <p className="text-lg font-black tracking-tight truncate group-hover:text-brand transition-colors">{question.title}</p>
+                      <p className="text-base md:text-lg font-black tracking-tight truncate group-hover:text-brand transition-colors">{question.title}</p>
                       {card.weakMarkedAt && (
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60 font-mono font-bold uppercase tracking-tighter">
-                           <span className="size-1.5 rounded-full bg-foreground/10" />
+                        <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/60 font-mono font-bold uppercase tracking-tighter">
+                           <span className="size-1 rounded-full bg-foreground/10" />
                            标记于 {new Date(card.weakMarkedAt).toLocaleDateString("zh-CN")} // DIAG-LOG
                         </div>
                       )}
@@ -196,12 +196,12 @@ export function WeakClient() {
                           e.stopPropagation();
                           handleRemoveWeak(question.id);
                         }}
-                        className="text-foreground/20 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all"
+                        className="text-foreground/20 hover:text-destructive hover:bg-destructive/5 rounded-lg transition-all"
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 className="size-3.5" />
                       </Button>
-                      <div className="size-10 flex items-center justify-center rounded-xl bg-foreground/5 text-foreground/40 group-hover:bg-brand group-hover:text-black transition-all">
-                         <Star className="size-4" />
+                      <div className="size-9 flex items-center justify-center rounded-lg bg-foreground/5 text-foreground/40 group-hover:bg-brand group-hover:text-black transition-all">
+                         <Star className="size-3.5" />
                       </div>
                     </div>
                   </div>
@@ -213,9 +213,9 @@ export function WeakClient() {
       )}
 
       {items.length > 0 && (
-        <div className="mt-16 flex flex-col items-center gap-4">
-           <div className="h-px w-24 bg-foreground/5" />
-           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">
+        <div className="mt-12 flex flex-col items-center gap-4">
+           <div className="h-px w-20 bg-foreground/5" />
+           <p className="text-[9px] font-black uppercase tracking-[0.3em] text-foreground/20">
              End of Diagnostic Report.
            </p>
         </div>

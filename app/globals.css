@@ -14,11 +14,11 @@
   --font-sans: "Inter", var(--font-sans);
   --font-mono: "JetBrains Mono", var(--font-geist-mono);
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
   
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);

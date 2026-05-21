@@ -19,10 +19,10 @@ export function TopNav() {
   const { masteryPercentage, isLoading } = useMastery();
 
   return (
-    <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b bg-background px-4">
+    <header className="sticky top-0 z-50 flex h-14 items-center gap-2 md:gap-4 border-b bg-background px-2 md:px-4">
       <Link
         href="/"
-        className="flex items-center gap-2 font-black text-lg tracking-tighter shrink-0 hover:opacity-80 transition-opacity group"
+        className="flex items-center gap-1.5 md:gap-2 font-black text-lg tracking-tighter shrink-0 hover:opacity-80 transition-opacity group"
       >
         <div className="relative">
           <div className="absolute inset-0 bg-brand/40 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -34,7 +34,7 @@ export function TopNav() {
       </Link>
 
 
-      <nav className="flex items-center gap-1 ml-4">
+      <nav className="flex items-center gap-1 ml-2 md:ml-4 overflow-x-auto scrollbar-none whitespace-nowrap">
         {navItems.map(({ href, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -42,7 +42,7 @@ export function TopNav() {
               key={href}
               href={href}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                "inline-flex items-center gap-1.5 rounded-lg px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
                 active
                   ? "bg-muted text-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50",

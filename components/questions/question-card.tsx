@@ -77,16 +77,16 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
   }, [question]);
 
   return (
-    <div className={cn("flip-container w-full max-w-2xl mx-auto min-h-[400px] animate-slide-up")}>
+    <div className={cn("flip-container w-full max-w-2xl mx-auto min-h-[350px] animate-slide-up")}>
       <div className={cn("flip-inner relative w-full h-full", flipped ? "flip-flipped" : "flip-front")}>
         {/* Front */}
         <Card
-          className="flip-face flip-front cursor-pointer select-none h-full glass glass-dark rounded-[2rem] border-2 border-white/5 shadow-2xl transition-all duration-500 hover:border-brand/30 group"
+          className="flip-face flip-front cursor-pointer select-none h-full glass glass-dark rounded-2xl border-2 border-white/5 shadow-2xl transition-all duration-500 hover:border-brand/30 group"
           onClick={handleClick}
         >
-          <CardHeader className="p-8 pb-4">
+          <CardHeader className="p-5 md:p-6 pb-3 md:pb-4">
             <QuestionMeta question={question} />
-            <CardTitle className="text-2xl md:text-3xl font-bold leading-tight group-hover:text-brand transition-colors">{question.title}</CardTitle>
+            <CardTitle className="text-lg md:text-xl font-bold leading-tight group-hover:text-brand transition-colors">{question.title}</CardTitle>
             {question.tags.length > 0 && (
               <div className="flex gap-1.5 flex-wrap mt-4">
                 {question.tags.map((tag) => (
@@ -95,14 +95,14 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
               </div>
             )}
           </CardHeader>
-          <CardContent className="p-8 pt-0">
-            <div className="mt-4 opacity-80 leading-relaxed">
+          <CardContent className="p-5 md:p-6 pt-0">
+            <div className="mt-3 opacity-80 leading-relaxed">
               {frontRenderer}
             </div>
             {!flipped && (
-              <div className="mt-12 flex flex-col items-center gap-2">
-                 <div className="h-px w-12 bg-muted-foreground/20" />
-                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">
+              <div className="mt-6 flex flex-col items-center gap-1.5">
+                 <div className="h-px w-10 bg-muted-foreground/20" />
+                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
                   点击查看答案
                 </p>
               </div>
@@ -111,12 +111,12 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
         </Card>
 
         {/* Back */}
-        <Card className="flip-face flip-back h-full glass glass-dark rounded-[2rem] border-2 border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)]">
-          <CardHeader className="p-8 pb-4">
+        <Card className="flip-face flip-back h-full glass glass-dark rounded-2xl border-2 border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)]">
+          <CardHeader className="p-5 md:p-6 pb-3 md:pb-4">
             <QuestionMeta question={question} />
-            <CardTitle className="text-2xl md:text-3xl font-bold leading-tight text-brand">{question.title}</CardTitle>
+            <CardTitle className="text-lg md:text-xl font-bold leading-tight text-brand">{question.title}</CardTitle>
           </CardHeader>
-          <CardContent className="p-8 pt-0 overflow-y-auto max-h-[300px] custom-scrollbar">
+          <CardContent className="p-5 md:p-6 pt-0 overflow-y-auto max-h-[260px] custom-scrollbar">
             <div className="leading-relaxed">
               {backRenderer}
             </div>

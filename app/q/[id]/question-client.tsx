@@ -83,7 +83,7 @@ export function QuestionClient({ question }: { question: Question }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 animate-slide-up space-y-8">
+    <div className="max-w-3xl mx-auto px-6 py-8 animate-slide-up space-y-6">
       {/* Navigation & Actions Header */}
       <div className="flex items-center justify-between gap-4">
         <Link
@@ -93,7 +93,7 @@ export function QuestionClient({ question }: { question: Question }) {
             "group flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-foreground pl-2"
           )}
         >
-          <ChevronLeft className="size-4 transition-transform group-hover:-translate-x-1" />
+          <ChevronLeft className="size-3.5 transition-transform group-hover:-translate-x-1" />
           <span>返回题库</span>
         </Link>
 
@@ -101,7 +101,7 @@ export function QuestionClient({ question }: { question: Question }) {
         <button
           onClick={handleToggle}
           className={cn(
-            "flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 shadow-md active:scale-95 border",
+            "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 shadow-md active:scale-95 border",
             mastered
               ? "bg-success/15 border-success/30 text-success hover:bg-success/20"
               : "bg-foreground text-background border-transparent hover:bg-brand hover:text-black"
@@ -109,12 +109,12 @@ export function QuestionClient({ question }: { question: Question }) {
         >
           {mastered ? (
             <>
-              <CheckCircle2 className="size-4 animate-scale-up" />
+              <CheckCircle2 className="size-3.5 animate-scale-up" />
               <span>已掌握</span>
             </>
           ) : (
             <>
-              <div className="size-2 rounded-full bg-background animate-pulse" />
+              <div className="size-1.5 rounded-full bg-background animate-pulse" />
               <span>标记掌握</span>
             </>
           )}
@@ -122,48 +122,48 @@ export function QuestionClient({ question }: { question: Question }) {
       </div>
 
       {/* Main Question Panel */}
-      <div className="glass glass-dark rounded-[2.5rem] border border-foreground/5 p-8 md:p-10 shadow-2xl space-y-8">
+      <div className="glass glass-dark rounded-2xl border border-foreground/5 p-6 shadow-xl space-y-6">
         {/* Meta Info Row */}
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-xs font-mono font-bold text-muted-foreground uppercase tracking-widest bg-foreground/5 px-3 py-1 rounded-lg border border-foreground/5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest bg-foreground/5 px-2 py-0.5 rounded border border-foreground/5">
             {question.id}
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-brand bg-brand/10 px-3 py-1 rounded-full border border-brand/20 uppercase tracking-wider">
-            <Icon className="size-3.5 shrink-0" />
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full border border-brand/20 uppercase tracking-wider">
+            <Icon className="size-3 shrink-0" />
             <span>{dirMeta.name}</span>
           </span>
           <span className={cn(
-            "text-xs font-bold px-3 py-1 rounded-full border uppercase tracking-wider",
+            "text-[10px] font-bold px-2 py-0.5 rounded-full border uppercase tracking-wider",
             difficultyClass[question.difficulty] || "bg-foreground/5 text-muted-foreground"
           )}>
             {difficultyLabel[question.difficulty] || question.difficulty}
           </span>
-          <span className="text-xs font-bold text-muted-foreground bg-foreground/5 px-3 py-1 rounded-full border border-foreground/5">
+          <span className="text-[10px] font-bold text-muted-foreground bg-foreground/5 px-2 py-0.5 rounded-full border border-foreground/5">
             {typeLabel[question.type] || question.type}
           </span>
         </div>
 
         {/* Question Title */}
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter leading-tight text-foreground">
+        <h1 className="text-xl md:text-2xl font-black tracking-tight leading-tight text-foreground">
           {question.title}
         </h1>
 
         {/* Question Body */}
         {question.type === "code-reading" ? (
-          <div className="rounded-2xl border border-foreground/5 bg-foreground/[0.02] p-6 overflow-x-auto shadow-inner">
-            <pre className="text-sm font-mono leading-relaxed whitespace-pre text-foreground/90">
+          <div className="rounded-xl border border-foreground/5 bg-foreground/[0.02] p-4 overflow-x-auto shadow-inner">
+            <pre className="text-xs font-mono leading-relaxed whitespace-pre text-foreground/90">
               <code>{question.body}</code>
             </pre>
           </div>
         ) : (
-          <div className="prose prose-neutral dark:prose-invert max-w-none text-base leading-relaxed text-foreground/80 whitespace-pre-wrap bg-foreground/[0.01] p-6 rounded-2xl border border-foreground/[0.03]">
+          <div className="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap bg-foreground/[0.01] p-4 rounded-xl border border-foreground/[0.03]">
             {question.body}
           </div>
         )}
 
         {/* Choice list for Choice questions */}
         {question.type === "choice" && choices.length > 0 && (
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2">
             {choices.map((choice) => {
               const state = getChoiceState(choice.id);
               const isSelected = selectedChoice === choice.id;
@@ -174,14 +174,14 @@ export function QuestionClient({ question }: { question: Question }) {
                   type="button"
                   onClick={() => setSelectedChoice(choice.id)}
                   className={cn(
-                    "flex items-start gap-4 rounded-2xl border p-4 text-left text-sm font-medium transition-all duration-200",
+                    "flex items-start gap-3 rounded-xl border p-3 text-left text-[13px] font-medium transition-all duration-200",
                     state === "idle" && "bg-foreground/[0.01] border-foreground/5 hover:bg-foreground/[0.03] hover:border-foreground/15",
                     state === "correct" && "bg-success/5 border-success/30 text-success shadow-sm",
                     state === "incorrect" && "bg-error/5 border-error/30 text-error shadow-sm"
                   )}
                 >
                   <span className={cn(
-                    "size-7 flex items-center justify-center rounded-xl text-xs font-mono font-bold border transition-colors shrink-0",
+                    "size-5.5 flex items-center justify-center rounded-md text-[11px] font-mono font-bold border transition-colors shrink-0",
                     state === "idle" && "bg-foreground/5 border-foreground/10 text-muted-foreground",
                     state === "correct" && "bg-success/15 border-success/40 text-success",
                     state === "incorrect" && "bg-error/15 border-error/40 text-error"
@@ -196,42 +196,42 @@ export function QuestionClient({ question }: { question: Question }) {
         )}
 
         {/* 2. Core Takeaway Answer (Blue Box) */}
-        <div className="border-l-4 border-blue-500 bg-blue-500/[0.03] dark:bg-blue-500/[0.05] p-6 rounded-r-[1.5rem] space-y-2.5 shadow-sm">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400">核心答题要点</h4>
-          <p className="text-sm md:text-base leading-relaxed text-foreground whitespace-pre-wrap font-medium">
+        <div className="border-l-4 border-blue-500 bg-blue-500/[0.03] dark:bg-blue-500/[0.05] p-4 rounded-r-xl space-y-1.5 shadow-sm">
+          <h4 className="text-[9px] font-black uppercase tracking-widest text-blue-500 dark:text-blue-400">核心答题要点</h4>
+          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-medium">
             {question.answer}
           </p>
         </div>
 
         {/* 3. Deep explanation */}
         {question.explanation && (
-          <div className="space-y-3 pt-4 border-t border-foreground/5">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">技术演进与深度解析</h4>
-            <div className="prose prose-neutral dark:prose-invert max-w-none text-sm md:text-base leading-relaxed text-foreground/80 whitespace-pre-wrap bg-foreground/[0.01] p-6 rounded-2xl border border-foreground/[0.03]">
+          <div className="space-y-2.5 pt-3 border-t border-foreground/5">
+            <h4 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">技术演进与深度解析</h4>
+            <div className="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap bg-foreground/[0.01] p-4 rounded-xl border border-foreground/[0.03]">
               {question.explanation}
             </div>
           </div>
         )}
 
         {/* 4. Tips / Handbook Notes (Yellow Box) */}
-        <div className="border-l-4 border-amber-500 bg-amber-500/[0.03] dark:bg-amber-500/[0.05] p-6 rounded-r-[1.5rem] space-y-3 shadow-sm">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-amber-500 dark:text-amber-400">面试官视角与底层建议</h4>
-          <div className="text-xs md:text-sm leading-relaxed text-muted-foreground space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-amber-500" />
+        <div className="border-l-4 border-amber-500 bg-amber-500/[0.03] dark:bg-amber-500/[0.05] p-4 rounded-r-xl space-y-2 shadow-sm">
+          <h4 className="text-[9px] font-black uppercase tracking-widest text-amber-500 dark:text-amber-400">面试官视角与底层建议</h4>
+          <div className="text-xs leading-relaxed text-muted-foreground space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <span className="size-1 rounded-full bg-amber-500" />
               <span>考察要点：该题主要考察底层嵌入式系统的核心概念与高级实践技巧。</span>
             </div>
             {question.companies.length > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="size-1.5 rounded-full bg-amber-500" />
+              <div className="flex items-center gap-1.5">
+                <span className="size-1 rounded-full bg-amber-500" />
                 <span>
                   历史考点：曾出现在 <strong>{question.companies.map(c => companyNames[c] || c).join("、")}</strong> 等公司的技术面试中。
                 </span>
               </div>
             )}
             {question.interviewYear && (
-              <div className="flex items-center gap-2">
-                <span className="size-1.5 rounded-full bg-amber-500" />
+              <div className="flex items-center gap-1.5">
+                <span className="size-1 rounded-full bg-amber-500" />
                 <span>出镜年份：{question.interviewYear} 年 {question.interviewRound || "技术面"}。</span>
               </div>
             )}
@@ -240,10 +240,10 @@ export function QuestionClient({ question }: { question: Question }) {
 
         {/* 5. Tag badging */}
         {question.tags.length > 0 && (
-          <div className="flex gap-2 flex-wrap items-center pt-4 border-t border-foreground/5">
-            <Tag className="size-4 text-muted-foreground/60 mr-1" />
+          <div className="flex gap-1.5 flex-wrap items-center pt-3 border-t border-foreground/5">
+            <Tag className="size-3.5 text-muted-foreground/60 mr-1" />
             {question.tags.map((t) => (
-              <span key={t} className="text-xs font-bold text-muted-foreground/80 bg-foreground/5 px-3 py-1 rounded-xl border border-foreground/5">
+              <span key={t} className="text-[10px] font-semibold text-muted-foreground/80 bg-foreground/5 px-2 py-0.5 rounded border border-foreground/5">
                 {t}
               </span>
             ))}
@@ -252,28 +252,28 @@ export function QuestionClient({ question }: { question: Question }) {
       </div>
 
       {/* Extra metadata details card */}
-      <div className="glass glass-dark rounded-[2rem] border border-foreground/5 p-6 shadow-md">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-foreground/5">
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">掌握状态</span>
+      <div className="glass glass-dark rounded-2xl border border-foreground/5 p-4 shadow-md">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center divide-x divide-foreground/5">
+          <div className="space-y-1">
+            <span className="text-[8px] font-black uppercase tracking-wider text-muted-foreground block">掌握状态</span>
             <span className={cn("text-xs font-bold", mastered ? "text-success" : "text-muted-foreground")}>
               {mastered ? "已掌握" : "未学习 / 复习中"}
             </span>
           </div>
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">公司背景</span>
+          <div className="space-y-1">
+            <span className="text-[8px] font-black uppercase tracking-wider text-muted-foreground block">公司背景</span>
             <span className="text-xs font-bold text-foreground">
               {question.companies.length > 0 ? question.companies.map(c => companyNames[c] || c).join(", ") : "公开题库"}
             </span>
           </div>
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">真题年份</span>
+          <div className="space-y-1">
+            <span className="text-[8px] font-black uppercase tracking-wider text-muted-foreground block">真题年份</span>
             <span className="text-xs font-bold text-foreground">
               {question.interviewYear ? `${question.interviewYear} 年` : "未录入"}
             </span>
           </div>
-          <div className="space-y-1.5">
-            <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground block">数据来源</span>
+          <div className="space-y-1">
+            <span className="text-[8px] font-black uppercase tracking-wider text-muted-foreground block">数据来源</span>
             <span className="text-xs font-bold text-foreground truncate max-w-full block px-2">
               {question.source || "EmbedStudio"}
             </span>

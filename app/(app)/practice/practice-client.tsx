@@ -139,23 +139,23 @@ export function PracticeClient() {
   }
 
   return (
-    <div className="relative flex flex-col items-center gap-12 px-6 py-16 min-h-[90vh] w-full max-w-5xl mx-auto overflow-hidden">
+    <div className="relative flex flex-col items-center gap-6 md:gap-8 px-6 py-8 md:py-10 min-h-[90vh] w-full max-w-5xl mx-auto overflow-hidden">
       {/* Background Depth Sync */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
       {/* Header Info */}
-      <div className="w-full max-w-3xl flex flex-col gap-6 animate-slide-up">
+      <div className="w-full max-w-3xl flex flex-col gap-4 animate-slide-up">
         <div className="flex items-end justify-between px-1">
           <div className="flex flex-col gap-1">
              <div className="flex items-center gap-2">
                 <div className="size-1.5 rounded-full bg-blue-400 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">Free Practice Session</span>
              </div>
-             <h1 className="text-3xl font-black tracking-tighter">自由练习.</h1>
+             <h1 className="text-xl md:text-2xl font-black tracking-tighter">自由练习.</h1>
           </div>
           <div className="flex flex-col items-end gap-1">
              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 text-right">Completion Status</span>
-             <span className="text-xl font-mono font-black text-foreground">{progress}%</span>
+             <span className="text-lg font-mono font-black text-foreground">{progress}%</span>
           </div>
         </div>
         
@@ -173,7 +173,7 @@ export function PracticeClient() {
       </div>
 
       {/* Card Section */}
-      <div className="w-full flex flex-col gap-12 items-center">
+      <div className="w-full flex flex-col gap-6 md:gap-8 items-center">
         {current && (
           <>
             <div className="w-full relative">
@@ -200,32 +200,32 @@ export function PracticeClient() {
             </div>
 
             {/* Controller Module */}
-            <div className="w-full max-w-3xl flex flex-col gap-12 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-4">
-                <div className="px-4 py-2 rounded-full glass glass-dark text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 italic border-foreground/5">
+            <div className="w-full max-w-3xl flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
+                <div className="px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 italic border-foreground/5">
                    RANDOM // NO-RECORD
                 </div>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full glass glass-dark text-[10px] font-black uppercase tracking-[0.2em] text-blue-400/80 border-blue-400/10">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-blue-400/80 border-blue-400/10">
                    <div className="size-1.5 rounded-full bg-blue-400 animate-pulse" />
                    练习模式
                 </div>
               </div>
 
-              <div className="w-full space-y-6">
+              <div className="w-full space-y-4">
                 <RatingBar
                   onRate={handleRate}
                   disabled={!flipped}
                 />
 
-                <div className="flex justify-center pt-4">
-                  <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-foreground/[0.02] border border-foreground/5 shadow-inner">
-                    <span className="size-2 rounded-full bg-foreground/10" />
-                    <p className="text-[10px] text-foreground/40 font-black uppercase tracking-[0.2em]">
+                <div className="flex justify-center pt-3">
+                  <div className="flex items-center gap-2.5 px-5 py-1.5 rounded-full bg-foreground/[0.02] border border-foreground/5 shadow-inner">
+                    <span className="size-1.5 rounded-full bg-foreground/10" />
+                    <p className="text-[9px] text-foreground/40 font-black uppercase tracking-[0.2em]">
                       {flipped
                         ? "Execute Rating to Advance"
                         : "Initialize Data Reveal [Space]"}
                     </p>
-                    <span className="size-2 rounded-full bg-foreground/10" />
+                    <span className="size-1.5 rounded-full bg-foreground/10" />
                   </div>
                 </div>
               </div>
