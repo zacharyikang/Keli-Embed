@@ -1,0 +1,551 @@
+"use client";
+
+import { useEffect, useState, useCallback, useMemo } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMastery } from "@/components/providers/mastery-provider";
+import { listAllQuestionsAction } from "@/lib/actions/library-actions";
+import type { Question } from "@/lib/domain";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  BookOpen,
+  Cpu,
+  Radio,
+  Microchip,
+  Terminal,
+  Binary,
+  Layers,
+  Search,
+  CheckCircle,
+  HelpCircle,
+  ChevronDown,
+  ExternalLink,
+  RotateCcw,
+  Tag,
+  CircleDot,
+  CheckCircle2,
+  X,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const directionMeta: Record<string, { name: string; icon: any }> = {
+  "c-language": { name: "C 语言", icon: BookOpen },
+  mcu: { name: "MCU 裸机开发", icon: Cpu },
+  rtos: { name: "RTOS", icon: Layers },
+  protocol: { name: "通信协议", icon: Radio },
+  "linux-embedded": { name: "Linux 嵌入式", icon: Terminal },
+  algorithm: { name: "数据结构与算法", icon: Binary },
+  "interview-mixed": { name: "面试综合", icon: Microchip },
+};
+
+const companyNames: Record<string, string> = {
+  huawei: "华为",
+  dji: "大疆",
+  xiaomi: "小米",
+  hikvision: "海康威视",
+  byd: "比亚迪",
+};
+
+const difficultyLabel: Record<string, string> = {
+  easy: "简单",
+  medium: "中等",
+  hard: "困难",
+};
+
+export function LibraryClient() {
+  const { 
+    isMastered, 
+    toggleMastery, 
+    setTotalQuestionsCount, 
+    masteredIds, 
+    masteryPercentage 
+  } = useMastery();
+  
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState<{ type: "all" | "direction" | "company"; value: string }>({ type: "all", value: "" });
+  const [activeTab, setActiveTab] = useState<"directions" | "companies">("directions");
+  const [expandedQid, setExpandedQid] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+
+  // Load questions on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await listAllQuestionsAction();
+        setQuestions(data);
+        setTotalQuestionsCount(data.length);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [setTotalQuestionsCount]);
+
+  // Handle Query Parameters for dynamic routing fallback
+  useEffect(() => {
+    const dir = searchParams.get("dir");
+    const company = searchParams.get("company");
+    if (dir) {
+      setCategory({ type: "direction", value: dir });
+      setActiveTab("directions");
+    } else if (company) {
+      setCategory({ type: "company", value: company });
+      setActiveTab("companies");
+    }
+  }, [searchParams]);
+
+  // Calculate dynamic stats for sidebar
+  const stats = useMemo(() => {
+    const directions = new Map<string, { total: number; mastered: number }>();
+    const companies = new Map<string, { total: number; mastered: number }>();
+
+    questions.forEach((q) => {
+      // Directions
+      const dir = q.direction;
+      const dirCur = directions.get(dir) ?? { total: 0, mastered: 0 };
+      dirCur.total++;
+      if (isMastered(q.id)) dirCur.mastered++;
+      directions.set(dir, dirCur);
+
+      // Companies
+      q.companies.forEach((comp) => {
+        const compCur = companies.get(comp) ?? { total: 0, mastered: 0 };
+        compCur.total++;
+        if (isMastered(q.id)) compCur.mastered++;
+        companies.set(comp, compCur);
+      });
+    });
+
+    return { directions, companies };
+  }, [questions, isMastered]);
+
+  // Filtered list of questions
+  const filteredQuestions = useMemo(() => {
+    return questions.filter((q) => {
+      // 1. Category Filter
+      if (category.type === "direction" && q.direction !== category.value) {
+        return false;
+      }
+      if (category.type === "company" && !q.companies.includes(category.value)) {
+        return false;
+      }
+
+      // 2. Search Query Filter
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        const matchTitle = q.title.toLowerCase().includes(query);
+        const matchBody = q.body.toLowerCase().includes(query);
+        const matchId = q.id.toLowerCase().includes(query);
+        const matchTags = q.tags.some((t) => t.toLowerCase().includes(query));
+        const matchAnswer = q.answer.toLowerCase().includes(query);
+        const matchExplanation = q.explanation?.toLowerCase().includes(query) ?? false;
+        
+        return matchTitle || matchBody || matchId || matchTags || matchAnswer || matchExplanation;
+      }
+
+      return true;
+    });
+  }, [questions, category, searchQuery]);
+
+  const clearFilters = useCallback(() => {
+    setSearchQuery("");
+    setCategory({ type: "all", value: "" });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto px-6 py-20 animate-pulse text-center space-y-4">
+        <div className="h-6 w-48 bg-foreground/10 rounded-full mx-auto" />
+        <div className="h-10 w-96 bg-foreground/10 rounded-full mx-auto" />
+        <div className="h-64 w-full bg-foreground/5 rounded-[2rem] mt-8" />
+      </div>
+    );
+  }
+
+  const totalQuestionsCount = questions.length;
+
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-12 animate-slide-up">
+      {/* Page Title */}
+      <div className="flex flex-col gap-2 mb-10">
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand bg-brand/10 w-fit px-3 py-1 rounded-full">Knowledge Repository</span>
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter">题库体系.</h1>
+      </div>
+
+      {/* Main Layout Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Sticky Sidebar (Column 4 of 12) */}
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-20 self-start">
+          
+          {/* Progress Card */}
+          <div className="glass glass-dark rounded-[2rem] border border-foreground/5 p-6 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">当前总进度</span>
+              <span className="text-xs font-mono font-bold text-brand">{masteredIds.size} / {totalQuestionsCount}</span>
+            </div>
+            
+            <div className="relative h-2 w-full bg-foreground/[0.03] rounded-full overflow-hidden border border-foreground/[0.05]">
+              <div 
+                className="h-full bg-brand rounded-full transition-all duration-500" 
+                style={{ width: `${masteryPercentage}%` }} 
+              />
+            </div>
+            
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-bold uppercase tracking-wide">
+              <span>掌握率</span>
+              <span>{masteryPercentage}%</span>
+            </div>
+          </div>
+
+          {/* Category Tabs Widget */}
+          <div className="glass glass-dark rounded-[2rem] border border-foreground/5 p-6 space-y-4 shadow-xl">
+            <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">分类目录</div>
+            
+            {/* Category Selector Tabs */}
+            <div className="grid grid-cols-2 bg-foreground/[0.02] p-1 rounded-xl border border-foreground/5 h-10">
+              <button
+                onClick={() => setActiveTab("directions")}
+                className={cn(
+                  "font-black text-[10px] uppercase tracking-wider rounded-lg transition-all",
+                  activeTab === "directions"
+                    ? "bg-foreground text-background shadow"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                按专业方向
+              </button>
+              <button
+                onClick={() => setActiveTab("companies")}
+                className={cn(
+                  "font-black text-[10px] uppercase tracking-wider rounded-lg transition-all",
+                  activeTab === "companies"
+                    ? "bg-foreground text-background shadow"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                按名企真题
+              </button>
+            </div>
+
+            {/* List items inside Sidebar */}
+            <div className="space-y-1 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
+              {/* "All" button */}
+              <button
+                onClick={() => setCategory({ type: "all", value: "" })}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all border",
+                  category.type === "all"
+                    ? "bg-brand/10 border-brand/30 text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                  <CircleDot className="size-4 text-brand shrink-0" />
+                  <span>全部题库</span>
+                </div>
+                <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
+                  {totalQuestionsCount}
+                </span>
+              </button>
+
+              {activeTab === "directions" && Array.from(stats.directions.entries()).map(([dirSlug, item]) => {
+                const meta = directionMeta[dirSlug] ?? { name: dirSlug, icon: HelpCircle };
+                const Icon = meta.icon;
+                const isSelected = category.type === "direction" && category.value === dirSlug;
+
+                return (
+                  <button
+                    key={dirSlug}
+                    onClick={() => setCategory({ type: "direction", value: dirSlug })}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all border",
+                      isSelected
+                        ? "bg-brand/10 border-brand/30 text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Icon className={cn("size-4 shrink-0", isSelected ? "text-brand" : "text-muted-foreground/60")} />
+                      <span className="truncate">{meta.name}</span>
+                    </div>
+                    <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
+                      {item.mastered}/{item.total}
+                    </span>
+                  </button>
+                );
+              })}
+
+              {activeTab === "companies" && Array.from(stats.companies.entries()).map(([compSlug, item]) => {
+                const name = companyNames[compSlug] ?? compSlug;
+                const isSelected = category.type === "company" && category.value === compSlug;
+
+                return (
+                  <button
+                    key={compSlug}
+                    onClick={() => setCategory({ type: "company", value: compSlug })}
+                    className={cn(
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-all border",
+                      isSelected
+                        ? "bg-brand/10 border-brand/30 text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={cn("size-1.5 rounded-full shrink-0", isSelected ? "bg-brand" : "bg-muted-foreground/40")} />
+                      <span>{name}</span>
+                    </div>
+                    <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
+                      {item.mastered}/{item.total}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Content Panel (Column 8 of 12) */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Search bar */}
+          <div className="relative w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="搜索题目、ID、解析或标签..."
+              className="w-full pl-12 pr-10 py-3.5 bg-foreground/[0.02] border border-foreground/5 hover:border-foreground/15 focus:border-brand/40 focus:ring-1 focus:ring-brand/20 outline-none rounded-2xl transition-all font-medium text-sm shadow-sm placeholder:text-muted-foreground/50"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            )}
+          </div>
+
+          {/* List and Accordions */}
+          {filteredQuestions.length === 0 ? (
+            <div className="glass glass-dark rounded-[2.5rem] border border-foreground/5 p-16 text-center space-y-4 shadow-xl">
+              <div className="size-16 bg-muted/30 text-muted-foreground flex items-center justify-center rounded-2xl mx-auto">
+                <RotateCcw className="size-8" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-lg font-black tracking-tight">未找到匹配题目</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  尝试更换左侧的知识目录分类，或在输入框中精简搜索关键字。
+                </p>
+              </div>
+              <button
+                onClick={clearFilters}
+                className="px-6 py-2.5 rounded-full bg-foreground text-background font-black text-xs uppercase tracking-wider hover:bg-brand hover:text-black transition-all shadow-md active:scale-95"
+              >
+                重置过滤条件
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {filteredQuestions.map((q) => {
+                const isExpanded = expandedQid === q.id;
+                const mastered = isMastered(q.id);
+                const dirMeta = directionMeta[q.direction] ?? { name: q.direction };
+
+                return (
+                  <div
+                    key={q.id}
+                    className={cn(
+                      "glass glass-dark rounded-[2rem] border border-foreground/5 shadow-lg overflow-hidden transition-all duration-300 hover:shadow-brand/5 hover:border-brand/20",
+                      isExpanded ? "border-brand/30 shadow-2xl bg-foreground/[0.01]" : ""
+                    )}
+                  >
+                    {/* Card Header (Visible Summary Row) */}
+                    <div 
+                      className="p-6 flex items-center justify-between gap-4 cursor-pointer select-none"
+                      onClick={() => setExpandedQid(isExpanded ? null : q.id)}
+                    >
+                      {/* Left: Mastery Checkbox & Question Header */}
+                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                        {/* Custom Mastery Checkbox */}
+                        <button
+                          type="button"
+                          className="shrink-0 p-1 rounded-lg hover:bg-foreground/5 cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-brand/40"
+                          aria-label={mastered ? "取消已掌握标记" : "标记已掌握"}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Avoid expanding card
+                            toggleMastery(q.id);
+                          }}
+                        >
+                          {mastered ? (
+                            <CheckCircle2 className="size-5.5 text-success fill-success/10 animate-scale-up" />
+                          ) : (
+                            <div className="size-5.5 rounded-full border-2 border-muted-foreground/30 hover:border-brand transition-colors" />
+                          )}
+                        </button>
+
+                        {/* Title and Badge Meta row */}
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest bg-foreground/5 px-2 py-0.5 rounded">
+                              {q.id}
+                            </span>
+                            <span className="text-[9px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                              {dirMeta.name}
+                            </span>
+                            <span className={cn(
+                              "text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
+                              q.difficulty === "easy" && "bg-success/15 text-success",
+                              q.difficulty === "medium" && "bg-warning/15 text-warning",
+                              q.difficulty === "hard" && "bg-error/15 text-error"
+                            )}>
+                              {difficultyLabel[q.difficulty]}
+                            </span>
+                          </div>
+                          
+                          <h3 className={cn(
+                            "text-base font-black tracking-tight leading-snug truncate",
+                            mastered ? "text-muted-foreground line-through decoration-muted-foreground/30" : "text-foreground"
+                          )}>
+                            {q.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      {/* Right: Expand Chevron */}
+                      <div className="shrink-0">
+                        <ChevronDown className={cn(
+                          "size-5 text-muted-foreground transition-transform duration-300",
+                          isExpanded ? "rotate-180 text-brand" : ""
+                        )} />
+                      </div>
+                    </div>
+
+                    {/* Collapsible Accordion Content */}
+                    <div
+                      className={cn(
+                        "grid transition-all duration-300 ease-in-out",
+                        isExpanded ? "grid-rows-[1fr] border-t border-foreground/5 opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="p-6 space-y-6">
+                          
+                          {/* 1. Body / Question Content */}
+                          <div className="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed whitespace-pre-wrap text-foreground/80 bg-foreground/[0.01] p-5 rounded-2xl border border-foreground/[0.03]">
+                            {q.body}
+                          </div>
+
+                          {/* Choices block for Choice-type questions */}
+                          {q.type === "choice" && q.choices && q.choices.length > 0 && (
+                            <div className="grid grid-cols-1 gap-2.5">
+                              {q.choices.map((c) => (
+                                <div
+                                  key={c.id}
+                                  className={cn(
+                                    "flex items-center gap-3 p-3.5 rounded-xl border text-sm font-medium",
+                                    c.correct 
+                                      ? "bg-success/5 border-success/20 text-success" 
+                                      : "bg-foreground/[0.01] border-foreground/5 text-muted-foreground"
+                                  )}
+                                >
+                                  <span className={cn(
+                                    "size-6 flex items-center justify-center rounded-lg text-xs font-mono border",
+                                    c.correct
+                                      ? "bg-success/15 border-success/30 text-success"
+                                      : "bg-foreground/5 border-foreground/10 text-muted-foreground"
+                                  )}>
+                                    {c.id}
+                                  </span>
+                                  <span>{c.text}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* 2. Core Takeaway Answer (Blue Box) */}
+                          <div className="border-l-4 border-blue-500 bg-blue-500/[0.03] dark:bg-blue-500/[0.05] p-5 rounded-r-2xl space-y-2">
+                            <h4 className="text-[10px] font-black uppercase tracking-wider text-blue-500 dark:text-blue-400">核心要点</h4>
+                            <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-medium">
+                              {q.answer}
+                            </p>
+                          </div>
+
+                          {/* 3. Deep explanation */}
+                          {q.explanation && (
+                            <div className="space-y-2.5">
+                              <h4 className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">技术演进与深度解析</h4>
+                              <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap bg-foreground/[0.01] p-5 rounded-2xl border border-foreground/[0.03]">
+                                {q.explanation}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* 4. Tips / Handbook Notes (Yellow Box) */}
+                          <div className="border-l-4 border-amber-500 bg-amber-500/[0.03] dark:bg-amber-500/[0.05] p-5 rounded-r-2xl space-y-2">
+                            <h4 className="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400">面试官视角与底层建议</h4>
+                            <div className="text-xs leading-relaxed text-muted-foreground space-y-1.5">
+                              <div>• 考察要点：该题主要考察底层嵌入式系统的关键概念与实际编程注意点。</div>
+                              {q.companies.length > 0 && (
+                                <div>• 历史考点：曾作为 <strong>{q.companies.map(c => companyNames[c] || c).join("、")}</strong> 等公司的面试真题。</div>
+                              )}
+                              {q.interviewYear && (
+                                <div>• 出镜年份：{q.interviewYear} 年 {q.interviewRound || ""}。</div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* 5. Tag badging */}
+                          {q.tags.length > 0 && (
+                            <div className="flex gap-1.5 flex-wrap items-center">
+                              <Tag className="size-3.5 text-muted-foreground/60 mr-1" />
+                              {q.tags.map((t) => (
+                                <span key={t} className="text-[10px] font-bold text-muted-foreground/70 bg-foreground/5 px-2.5 py-0.5 rounded-lg border border-foreground/5">
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Accordion Action Bar */}
+                          <div className="flex items-center justify-between border-t border-foreground/5 pt-4">
+                            <Link
+                              href={`/q/${q.id}`}
+                              className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted-foreground hover:text-brand transition-colors"
+                            >
+                              <span>在独立页面查看</span>
+                              <ExternalLink className="size-3.5" />
+                            </Link>
+
+                            <button
+                              onClick={() => setExpandedQid(null)}
+                              className="px-4 py-1.5 rounded-full bg-foreground/5 hover:bg-foreground/10 text-muted-foreground hover:text-foreground font-black text-[10px] uppercase tracking-wider transition-all"
+                            >
+                              收起解析
+                            </button>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    </div>
+  );
+}

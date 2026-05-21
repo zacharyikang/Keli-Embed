@@ -1,0 +1,81 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { LogOut, User } from "lucide-react";
+import { useUser, useSignOut, useAuthLoading } from "@/lib/auth/client";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+
+export function UserMenu() {
+  const user = useUser();
+  const loading = useAuthLoading();
+  const signOut = useSignOut();
+  const router = useRouter();
+
+  if (loading) {
+    return <div className="size-8 rounded-full bg-muted animate-pulse" />;
+  }
+
+  if (!user) {
+    return (
+      <a
+        href="/auth/sign-in"
+        className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+      >
+        登录
+      </a>
+    );
+  }
+
+  const initials = (user.email?.slice(0, 2) ?? "U").toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={(triggerProps) => (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            {...triggerProps}
+          >
+            <Avatar className="size-8">
+              <AvatarFallback className="text-xs bg-brand text-black font-bold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        )}
+      />
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel className="text-xs text-muted-foreground truncate">
+          {user.email}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => router.push("/settings")}
+          className="cursor-pointer"
+        >
+          <User className="mr-2 size-4" />
+          设置
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => signOut()}
+          className="cursor-pointer"
+        >
+          <LogOut className="mr-2 size-4" />
+          退出登录
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

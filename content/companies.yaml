@@ -1,0 +1,44 @@
+- slug: huawei
+  name: 华为
+  fullName: 华为技术有限公司
+  logoUrl: null
+  description: 通信设备、芯片、嵌入式系统
+  category: 大厂
+  displayOrder: 1
+  questionCount: 50
+
+- slug: dji
+  name: 大疆
+  fullName: 大疆创新科技有限公司
+  logoUrl: null
+  description: 无人机、机器人、嵌入式硬件
+  category: 独角兽
+  displayOrder: 2
+  questionCount: 50
+
+- slug: xiaomi
+  name: 小米
+  fullName: 小米科技有限公司
+  logoUrl: null
+  description: IoT、智能硬件、汽车电子
+  category: 大厂
+  displayOrder: 3
+  questionCount: 50
+
+- slug: hikvision
+  name: 海康威视
+  fullName: 海康威视数字技术股份有限公司
+  logoUrl: null
+  description: 安防设备、嵌入式系统、AI 芯片
+  category: 大厂
+  displayOrder: 4
+  questionCount: 50
+
+- slug: byd
+  name: 比亚迪
+  fullName: 比亚迪股份有限公司
+  logoUrl: null
+  description: 汽车电子、BMS、嵌入式系统
+  category: 大厂
+  displayOrder: 5
+  questionCount: 30

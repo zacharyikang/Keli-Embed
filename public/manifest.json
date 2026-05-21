@@ -1,0 +1,13 @@
+{
+  "name": "EmbedStudio - 嵌入式工程师科学刷题",
+  "short_name": "EmbedStudio",
+  "description": "间隔重复算法帮你高效记忆嵌入式面试题",
+  "start_url": "/today",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

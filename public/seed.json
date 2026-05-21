@@ -1,0 +1,224 @@
+{
+  "version": "2026-05-21",
+  "questions": [
+    {
+      "id": "c-lang-const-001",
+      "title": "const 指针辨析",
+      "body": "请解释以下三种声明的区别：\nconst int *p;\nint * const p;\nconst int * const p;",
+      "type": "concept",
+      "direction": "c-language",
+      "difficulty": "medium",
+      "tags": [
+        "const",
+        "指针",
+        "类型限定"
+      ],
+      "answer": "1. const int *p（或 int const *p）：指针指向的内容不可修改，但指针本身可以指向别处。称为\\\"指向常量的指针\\\"。\\n2. int * const p：指针本身是常量，不可指向别处，但可以修改指向的内容。称为\\\"常量指针\\\"。\\n3. const int * const p：指针本身和指向的内容都不可修改。",
+      "explanation": "阅读技巧：从右向左读，遇到 * 读作\\\"pointer to\\\"。const 修饰其右边的类型。在嵌入式开发中，const 用于将数据放到 Flash（.rodata 段），节省 RAM。",
+      "choices": null,
+      "companies": [
+        "huawei"
+      ],
+      "interviewYear": 2022,
+      "interviewRound": "笔试",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "c-lang-static-001",
+      "title": "static 关键字三种用法",
+      "body": "请说明 C 语言中 static 关键字的三种主要用法及其作用。",
+      "type": "concept",
+      "direction": "c-language",
+      "difficulty": "easy",
+      "tags": [
+        "static",
+        "作用域",
+        "生命周期"
+      ],
+      "answer": "1. 静态局部变量：在函数内声明，生命周期为整个程序运行期，但作用域仅限于该函数。用于保持函数调用之间的状态。\\n2. 静态全局变量/函数：在文件作用域声明，限制符号的可见性为本编译单元（.c 文件），实现信息隐藏。\\n3. 静态成员（C++ 中）：属于类而非对象，所有实例共享一份。",
+      "explanation": "static 的核心是改变符号的链接属性（linkage）和存储周期（storage duration）。在嵌入式系统中常用于模块内部状态保持和接口封装。",
+      "choices": null,
+      "companies": [
+        "huawei",
+        "hikvision"
+      ],
+      "interviewYear": 2023,
+      "interviewRound": "一面",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "c-lang-volatile-001",
+      "title": "volatile 关键字在中断中的作用",
+      "body": "在嵌入式系统中，为什么中断服务函数（ISR）中修改的全局变量必须声明为 volatile？如果不加 volatile 会出现什么问题？",
+      "type": "concept",
+      "direction": "c-language",
+      "difficulty": "easy",
+      "tags": [
+        "volatile",
+        "中断",
+        "编译器优化"
+      ],
+      "answer": "volatile 告诉编译器不要对该变量进行优化，每次访问都必须从内存地址重新读取，而不是使用寄存器缓存的值。在 ISR 中修改的全局变量如果不加 volatile，编译器可能将变量缓存在寄存器中，导致主循环永远读不到 ISR 更新的值。",
+      "explanation": "编译器在优化级别较高时会将频繁访问的变量缓存在寄存器中。ISR 是异步执行的，编译器无法预见 ISR 何时修改该变量，因此需要 volatile 强制每次从内存读取。",
+      "choices": null,
+      "companies": [
+        "huawei",
+        "dji"
+      ],
+      "interviewYear": 2023,
+      "interviewRound": "笔试",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "mcu-gpio-001",
+      "title": "GPIO 的推挽输出与开漏输出",
+      "body": "请解释 GPIO 的推挽输出（Push-Pull）和开漏输出（Open-Drain）的区别，并说明各自的应用场景。",
+      "type": "concept",
+      "direction": "mcu",
+      "difficulty": "medium",
+      "tags": [
+        "GPIO",
+        "推挽",
+        "开漏",
+        "硬件基础"
+      ],
+      "answer": "推挽输出（Push-Pull）可以主动输出高电平和低电平，驱动能力强；开漏输出（Open-Drain）只能主动输出低电平，输出高电平需要外部上拉电阻，适用于电平转换或线与（Wired-AND）逻辑。",
+      "explanation": "推挽使用两个互补的 MOS 管；开漏只使用一个下方的 MOS 管。开漏在多设备通信（如 I2C）中非常重要。",
+      "choices": null,
+      "companies": [
+        "hikvision",
+        "byd"
+      ],
+      "interviewYear": 2024,
+      "interviewRound": "一面",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "mcu-nvic-001",
+      "title": "中断优先级：抢占优先级与响应优先级",
+      "body": "在 STM32 等 MCU 中，如何理解抢占优先级（Preemption Priority）和响应优先级（Subpriority）的关系？",
+      "type": "concept",
+      "direction": "mcu",
+      "difficulty": "medium",
+      "tags": [
+        "NVIC",
+        "中断优先级",
+        "抢占",
+        "响应"
+      ],
+      "answer": "抢占优先级决定了中断是否可以打断正在执行的其他中断（嵌套）；响应优先级（也称子优先级）决定了当多个中断同时挂起且抢占优先级相同时，谁先执行。数值越小，优先级越高。",
+      "explanation": "在 ARM Cortex-M 中，由 NVIC 管理。如果抢占优先级相同，即使响应优先级高，也无法打断正在执行的中断。",
+      "choices": null,
+      "companies": [
+        "huawei",
+        "xiaomi"
+      ],
+      "interviewYear": 2023,
+      "interviewRound": "一面",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "protocol-can-001",
+      "title": "CAN 总线的非破坏性仲裁机制",
+      "body": "请详细解释 CAN 总线是如何通过标识符（ID）实现多节点无冲突仲裁的。",
+      "type": "concept",
+      "direction": "protocol",
+      "difficulty": "hard",
+      "tags": [
+        "CAN",
+        "仲裁",
+        "标识符",
+        "显性隐性"
+      ],
+      "answer": "CAN 总线采用线与逻辑，0 为显性（占据总线），1 为隐性。多个节点同时发送时，逐位比较标识符（ID）。发送 1 的节点若检测到总线为 0，则发现冲突并主动退出，ID 越小的节点优先级越高，且不会破坏正在发送的高优先级帧。",
+      "explanation": "这种机制确保了总线利用率，在高负载下依然能保证高优先级消息的实时性。",
+      "choices": null,
+      "companies": [
+        "byd",
+        "huawei"
+      ],
+      "interviewYear": 2024,
+      "interviewRound": "一面",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "protocol-i2c-001",
+      "title": "I2C 协议的起始和停止信号",
+      "body": "请描述 I2C 总线通信中“起始信号”和“停止信号”的具体电平跳变逻辑。",
+      "type": "concept",
+      "direction": "protocol",
+      "difficulty": "easy",
+      "tags": [
+        "I2C",
+        "通信协议",
+        "波形"
+      ],
+      "answer": "起始信号（Start）：在 SCL 为高电平时，SDA 由高电平跳变到低电平；停止信号（Stop）：在 SCL 为高电平时，SDA 由低电平跳变到高电平。",
+      "explanation": "这是 I2C 协议中唯二允许在 SCL 高电平时改变 SDA 状态的情况，其他数据传输必须在 SCL 低电平时改变 SDA。",
+      "choices": null,
+      "companies": [
+        "xiaomi",
+        "hikvision"
+      ],
+      "interviewYear": 2022,
+      "interviewRound": "笔试",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "rtos-sync-001",
+      "title": "互斥量与信号量的区别",
+      "body": "在 RTOS 中，互斥量（Mutex）和二值信号量（Binary Semaphore）在功能和实现上有哪些本质区别？",
+      "type": "concept",
+      "direction": "rtos",
+      "difficulty": "hard",
+      "tags": [
+        "RTOS",
+        "互斥量",
+        "信号量",
+        "优先级翻转"
+      ],
+      "answer": "互斥量（Mutex）具有所有权概念，主要用于互斥访问共享资源，且通常支持优先级继承机制以防止优先级翻转；信号量（Semaphore）主要用于任务同步或资源计数，不具备所有权，也不支持优先级继承。",
+      "explanation": "优先级继承是互斥量的重要特性：当高优先级任务等待互斥量时，持有该互斥量的低优先级任务会临时提升至高优先级。",
+      "choices": null,
+      "companies": [
+        "dji"
+      ],
+      "interviewYear": 2023,
+      "interviewRound": "二面",
+      "source": null,
+      "isPremium": false
+    },
+    {
+      "id": "rtos-task-001",
+      "title": "RTOS 任务调度的基本原理",
+      "body": "请简述 RTOS（如 FreeRTOS）中任务调度的核心机制，包括优先级抢占和时间片轮转。",
+      "type": "concept",
+      "direction": "rtos",
+      "difficulty": "medium",
+      "tags": [
+        "RTOS",
+        "调度",
+        "抢占式",
+        "时间片"
+      ],
+      "answer": "大多数实时操作系统（如 FreeRTOS）采用基于优先级的全抢占式调度。高优先级任务就绪时会立即打断低优先级任务。若优先级相同，则通常采用时间片轮转（Round Robin）调度。",
+      "explanation": "调度器在 SysTick 中断或任务主动让出 CPU 时运行，从就绪列表中选择优先级最高的任务进行上下文切换。",
+      "choices": null,
+      "companies": [
+        "dji",
+        "huawei"
+      ],
+      "interviewYear": 2024,
+      "interviewRound": "笔试",
+      "source": null,
+      "isPremium": false
+    }
+  ]
+}

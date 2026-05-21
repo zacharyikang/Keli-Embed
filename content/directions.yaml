@@ -1,0 +1,41 @@
+- slug: c-language
+  name: C 语言
+  description: 指针、内存管理、关键字、编译原理
+  icon: null
+  displayOrder: 1
+
+- slug: mcu
+  name: MCU 裸机开发
+  description: GPIO、中断、DMA、定时器、ADC
+  icon: null
+  displayOrder: 2
+
+- slug: rtos
+  name: RTOS
+  description: FreeRTOS、任务调度、IPC、优先级反转
+  icon: null
+  displayOrder: 3
+
+- slug: protocol
+  name: 通信协议
+  description: I2C、SPI、UART、CAN、Modbus
+  icon: null
+  displayOrder: 4
+
+- slug: linux-embedded
+  name: Linux 嵌入式开发
+  description: 设备树、字符驱动、内核编程
+  icon: null
+  displayOrder: 5
+
+- slug: algorithm
+  name: 数据结构与算法
+  description: 环形缓冲、位操作、状态机、排序
+  icon: null
+  displayOrder: 6
+
+- slug: interview-mixed
+  name: 面试综合
+  description: 系统设计、调试方法、项目架构
+  icon: null
+  displayOrder: 7
