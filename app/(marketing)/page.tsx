@@ -90,16 +90,16 @@ export default function Home() {
           <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">基础设施与核心架构.</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[280px] md:auto-rows-[320px]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[220px] md:auto-rows-[260px]">
           {/* Main Intelligence - 8 Columns */}
-          <div className="md:col-span-8 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex flex-col justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl hover:shadow-brand/5">
-            <div className="space-y-4 relative z-10 max-w-lg">
+          <div className="md:col-span-8 group relative overflow-hidden rounded-2xl border glass glass-dark p-5 md:p-6 flex flex-col justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl hover:shadow-brand/5">
+            <div className="space-y-3 relative z-10 max-w-lg">
               <div className="flex size-12 items-center justify-center rounded-xl bg-foreground text-background shadow-xl">
                 <Brain className="size-6" />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl md:text-3xl font-black tracking-tight text-foreground leading-[1.1]">自适应学习引擎</h3>
-                <p className="text-muted-foreground leading-snug text-sm md:text-base font-medium">
+              <div className="space-y-1.5">
+                <h3 className="text-xl md:text-2xl font-black tracking-tight text-foreground leading-[1.1]">自适应学习引擎</h3>
+                <p className="text-muted-foreground leading-snug text-xs md:text-sm font-medium">
                   针对复杂工程知识优化的 SM-2 算法，精准捕捉遗忘临界点，最大化技术记忆效率。
                 </p>
               </div>
@@ -115,13 +115,13 @@ export default function Home() {
           </div>
 
           {/* Coverage - 4 Columns */}
-          <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex flex-col justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
+          <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-5 md:p-6 flex flex-col justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
             <div className="flex size-12 items-center justify-center rounded-xl bg-brand/10 text-brand group-hover:bg-brand group-hover:text-black transition-colors duration-500">
               <BookOpen className="size-6" />
             </div>
-            <div className="space-y-3">
-              <h3 className="text-xl font-black tracking-tight leading-tight">全栈知识图谱</h3>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed">
+            <div className="space-y-2">
+              <h3 className="text-lg font-black tracking-tight leading-tight">全栈知识图谱</h3>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
                 覆盖从底层寄存器操作到 Linux 内核空间的完整知识体系。
               </p>
               <div className="h-1 w-10 bg-foreground/5 group-hover:w-full transition-all duration-700" />
@@ -129,21 +129,21 @@ export default function Home() {
           </div>
 
           {/* Small Specialized Units */}
-          <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex flex-col items-start justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
+          <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-5 md:p-6 flex flex-col items-start justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
             <div className="flex size-12 items-center justify-center rounded-xl bg-foreground/5 text-foreground/40 group-hover:bg-foreground group-hover:text-background transition-colors duration-500">
               <Target className="size-6" />
             </div>
-            <div className="space-y-3">
-              <h3 className="text-xl font-black tracking-tight leading-tight">薄弱环节诊断</h3>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium italic leading-relaxed">智能识别并隔离知识盲区，针对性补强。</p>
+            <div className="space-y-2">
+              <h3 className="text-lg font-black tracking-tight leading-tight">薄弱环节诊断</h3>
+              <p className="text-xs text-muted-foreground font-medium italic leading-relaxed">智能识别并隔离知识盲区，针对性补强。</p>
               <span className="text-[9px] font-black uppercase tracking-widest text-foreground/10 group-hover:text-brand transition-colors">Neural Isolation.</span>
             </div>
           </div>
 
-          <div className="md:col-span-8 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex items-center justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
-            <div className="space-y-4 max-w-md">
-               <h3 className="text-2xl font-black tracking-tight leading-tight">多维数据看板</h3>
-               <p className="text-muted-foreground font-medium text-xs md:text-sm leading-relaxed">高保真热力图与方向性进度分析，通过数据量化每一刻的技术成长。</p>
+          <div className="md:col-span-8 group relative overflow-hidden rounded-2xl border glass glass-dark p-5 md:p-6 flex items-center justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
+            <div className="space-y-3 max-w-md">
+               <h3 className="text-xl font-black tracking-tight leading-tight">多维数据看板</h3>
+               <p className="text-muted-foreground font-medium text-xs leading-relaxed">高保真热力图与方向性进度分析，通过数据量化每一刻的技术成长。</p>
                <div className="flex gap-1.5">
                   {[...Array(4)].map((_, i) => (
                     <div key={i} className="h-1 w-6 rounded-full bg-foreground/5 group-hover:bg-brand transition-all duration-700" style={{ transitionDelay: `${i*100}ms` }} />
