@@ -116,8 +116,8 @@ export default function Home() {
 
           {/* Coverage - 4 Columns */}
           <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex flex-col justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand group-hover:bg-brand group-hover:text-black transition-colors duration-500">
-              <BookOpen className="size-5" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-brand/10 text-brand group-hover:bg-brand group-hover:text-black transition-colors duration-500">
+              <BookOpen className="size-6" />
             </div>
             <div className="space-y-3">
               <h3 className="text-xl font-black tracking-tight leading-tight">全栈知识图谱</h3>
@@ -130,8 +130,8 @@ export default function Home() {
 
           {/* Small Specialized Units */}
           <div className="md:col-span-4 group relative overflow-hidden rounded-2xl border glass glass-dark p-6 md:p-8 flex flex-col items-start justify-between hover:border-brand/40 transition-all duration-700 shadow-2xl">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-foreground/5 text-foreground/40 group-hover:bg-foreground group-hover:text-background transition-colors duration-500">
-              <Target className="size-5" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-foreground/5 text-foreground/40 group-hover:bg-foreground group-hover:text-background transition-colors duration-500">
+              <Target className="size-6" />
             </div>
             <div className="space-y-3">
               <h3 className="text-xl font-black tracking-tight leading-tight">薄弱环节诊断</h3>
@@ -150,8 +150,8 @@ export default function Home() {
                   ))}
                </div>
             </div>
-            <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-brand/5 text-brand shadow-[0_0_50px_-10px_var(--color-brand)] group-hover:scale-110 group-hover:bg-brand group-hover:text-black transition-all duration-700">
-              <BarChart3 className="size-10" />
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand/5 text-brand shadow-[0_0_50px_-10px_var(--color-brand)] group-hover:scale-110 group-hover:bg-brand group-hover:text-black transition-all duration-700">
+              <BarChart3 className="size-6" />
             </div>
           </div>
         </div>

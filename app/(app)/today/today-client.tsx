@@ -28,6 +28,9 @@ export function TodayClient({ initialQueue }: Props) {
   const progress = total > 0 ? Math.round((index / total) * 100) : 0;
 
   const handleFlip = useCallback(() => {
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     setFlipped(prev => !prev);
   }, []);
 
