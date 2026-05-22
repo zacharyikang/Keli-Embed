@@ -147,31 +147,16 @@ export function PracticeClient() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
       {/* Header Info */}
-      <div className="w-full max-w-lg flex flex-col gap-4 animate-slide-up">
-        <div className="flex items-end justify-between px-1">
-          <div className="flex flex-col gap-1">
-             <div className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-blue-400 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40">Free Practice Session</span>
-             </div>
-             <h1 className="text-xl md:text-2xl font-black tracking-tighter">自由练习.</h1>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/40 text-right">Completion Status</span>
-             <span className="text-lg font-mono font-black text-foreground">{progress}%</span>
-          </div>
+      <div className="w-full max-w-lg flex flex-col gap-2 animate-slide-up">
+        <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
+          <span className="font-semibold tracking-tight">练习进度：{index + 1} / {total}</span>
+          <span className="font-mono font-semibold">{progress}%</span>
         </div>
-        
-        <div className="relative h-1.5 w-full bg-foreground/[0.03] rounded-full overflow-hidden border border-foreground/[0.05]">
+        <div className="relative h-1 w-full bg-foreground/[0.04] rounded-full overflow-hidden">
           <div 
-            className="h-full bg-blue-500 rounded-full transition-all duration-700 cubic-bezier(0.2, 0.8, 0.2, 1)" 
+            className="h-full bg-blue-500/80 rounded-full transition-all duration-500" 
             style={{ width: `${progress}%` }} 
           />
-        </div>
-
-        <div className="flex justify-between px-1 text-[10px] font-mono font-bold text-foreground/30 uppercase tracking-widest">
-           <span>Unit {index + 1} of {total}</span>
-           <span>Randomized Learning Mode</span>
         </div>
       </div>
 
