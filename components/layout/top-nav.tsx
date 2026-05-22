@@ -37,12 +37,14 @@ export function TopNav() {
       <nav className="flex items-center gap-1 ml-2 md:ml-4 overflow-x-auto scrollbar-none whitespace-nowrap">
         {navItems.map(({ href, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
+          const hideOnMobile = ["/today", "/library", "/practice"].includes(href);
           return (
             <Link
               key={href}
               href={href}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+                "items-center gap-1.5 rounded-lg px-2 py-1 md:px-3 md:py-1.5 text-xs md:text-sm font-medium transition-colors whitespace-nowrap shrink-0",
+                hideOnMobile ? "hidden md:inline-flex" : "inline-flex",
                 active
                   ? "bg-muted text-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
