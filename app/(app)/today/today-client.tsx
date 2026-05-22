@@ -139,7 +139,7 @@ export function TodayClient({ initialQueue }: Props) {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-20" />
 
       {/* Header Technical Info */}
-      <div className="w-full max-w-3xl flex flex-col gap-4 animate-slide-up">
+      <div className="w-full max-w-lg flex flex-col gap-4 animate-slide-up">
         <div className="flex items-end justify-between px-1">
           <div className="flex flex-col gap-1">
              <div className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export function TodayClient({ initialQueue }: Props) {
             </div>
 
             {/* Controller Module */}
-            <div className="w-full max-w-3xl flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="w-full max-w-lg flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
                 <WeakBadge
                   isWeak={weak}

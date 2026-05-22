@@ -4,18 +4,18 @@ type Props = { question: Question; showAnswer: boolean };
 
 export function ConceptRenderer({ question, showAnswer }: Props) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <div className="prose prose-neutral dark:prose-invert max-w-none">
-        <p className="text-lg leading-relaxed whitespace-pre-wrap">{question.body}</p>
+        <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">{question.body}</p>
       </div>
       {showAnswer && (
-        <div className="mt-4 rounded-lg border bg-muted/50 p-4">
-          <h3 className="text-sm font-medium text-muted-foreground mb-2">答案</h3>
-          <p className="text-base leading-relaxed whitespace-pre-wrap">{question.answer}</p>
+        <div className="mt-3 rounded-lg border bg-muted/50 p-3.5">
+          <h3 className="text-xs font-semibold text-muted-foreground mb-1.5">答案</h3>
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">{question.answer}</p>
           {question.explanation && (
-            <div className="mt-3 border-t pt-3">
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">解析</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+            <div className="mt-2.5 border-t pt-2.5">
+              <h3 className="text-xs font-semibold text-muted-foreground mb-1">解析</h3>
+              <p className="text-[13px] text-muted-foreground/90 leading-relaxed whitespace-pre-wrap">
                 {question.explanation}
               </p>
             </div>

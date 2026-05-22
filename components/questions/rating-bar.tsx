@@ -41,7 +41,7 @@ type Props = {
 
 export function RatingBar({ onRate, disabled }: Props) {
   return (
-    <div className="flex gap-3 w-full max-w-2xl mx-auto">
+    <div className="flex gap-3 w-full max-w-lg mx-auto">
       {ratingConfig.map(({ value, label, key, color, glow }) => (
         <button
           key={value}
@@ -49,7 +49,7 @@ export function RatingBar({ onRate, disabled }: Props) {
           disabled={disabled}
           onClick={() => onRate(value)}
           className={cn(
-            "flex-1 flex flex-col items-center gap-1.5 rounded-2xl border py-4 text-sm font-bold transition-all duration-300 glass glass-dark",
+            "flex-1 flex flex-col items-center gap-1.5 rounded-2xl border py-3 text-sm font-bold transition-all duration-300 glass glass-dark",
             disabled 
               ? "opacity-20 cursor-not-allowed scale-95 grayscale" 
               : cn(color, "hover:-translate-y-1 active:scale-95", glow),
