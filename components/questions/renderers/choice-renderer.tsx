@@ -34,7 +34,10 @@ export function ChoiceRenderer({ question, showAnswer }: Props) {
               key={choice.id}
               type="button"
               disabled={showAnswer}
-              onClick={() => setSelected(choice.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelected(choice.id);
+              }}
               className={cn(
                 "flex items-start gap-2.5 rounded-lg border p-2.5 text-left text-sm transition-colors",
                 state === "idle" && "hover:bg-muted/50",

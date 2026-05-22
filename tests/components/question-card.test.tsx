@@ -118,4 +118,42 @@ describe("QuestionCard", () => {
     fireEvent.click(screen.getByText("点击返回题目"));
     expect(onFlip).toHaveBeenCalledOnce();
   });
+
+  it("triggers onSwipeLeft when swiped left", () => {
+    const onSwipeLeft = vi.fn();
+    render(
+      <QuestionCard
+        question={testQuestion}
+        card={testCard}
+        onSwipeLeft={onSwipeLeft}
+      />
+    );
+    const cardEl = screen.getAllByText("volatile 关键字的作用")[0].closest(".flip-container");
+    expect(cardEl).not.toBeNull();
+    if (cardEl) {
+      fireEvent.touchStart(cardEl, { touches: [{ clientX: 200, clientY: 200 }] });
+      fireEvent.touchMove(cardEl, { touches: [{ clientX: 50, clientY: 200 }] }); // -150px delta
+      fireEvent.touchEnd(cardEl);
+      expect(onSwipeLeft).toHaveBeenCalledOnce();
+    }
+  });
+
+  it("triggers onSwipeRight when swiped right", () => {
+    const onSwipeRight = vi.fn();
+    render(
+      <QuestionCard
+        question={testQuestion}
+        card={testCard}
+        onSwipeRight={onSwipeRight}
+      />
+    );
+    const cardEl = screen.getAllByText("volatile 关键字的作用")[0].closest(".flip-container");
+    expect(cardEl).not.toBeNull();
+    if (cardEl) {
+      fireEvent.touchStart(cardEl, { touches: [{ clientX: 100, clientY: 200 }] });
+      fireEvent.touchMove(cardEl, { touches: [{ clientX: 250, clientY: 200 }] }); // +150px delta
+      fireEvent.touchEnd(cardEl);
+      expect(onSwipeRight).toHaveBeenCalledOnce();
+    }
+  });
 });

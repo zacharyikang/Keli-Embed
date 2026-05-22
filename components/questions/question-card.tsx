@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import type { Question, CardState } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,8 @@ type Props = {
   card: CardState;
   flipped?: boolean;
   onFlip?: () => void;
+  onSwipeLeft?: () => void;
+  onSwipeRight?: () => void;
 };
 
 function QuestionMeta({ question }: { question: Question }) {
@@ -47,10 +49,107 @@ function QuestionMeta({ question }: { question: Question }) {
   );
 }
 
-export function QuestionCard({ question, flipped, onFlip }: Props) {
+export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRight }: Props) {
   const handleClick = useCallback(() => {
     onFlip?.();
   }, [onFlip]);
+
+  const [offsetX, setOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const isSwipePending = useRef(false);
+
+  const dragThreshold = 5;
+  const swipeThreshold = 100;
+
+  const handleDragStart = useCallback((clientX: number, clientY: number) => {
+    startX.current = clientX;
+    startY.current = clientY;
+    isSwipePending.current = true;
+    setIsDragging(true);
+    setOffsetX(0);
+  }, []);
+
+  const handleDragMove = useCallback((clientX: number, clientY: number, e: { preventDefault: () => void }) => {
+    if (!isDragging) return;
+    const deltaX = clientX - startX.current;
+    const deltaY = clientY - startY.current;
+
+    if (isSwipePending.current) {
+      const absX = Math.abs(deltaX);
+      const absY = Math.abs(deltaY);
+      if (absY > dragThreshold && absY > absX) {
+        // Vertical scroll taking place, cancel horizontal swipe drag
+        setIsDragging(false);
+        isSwipePending.current = false;
+        setOffsetX(0);
+        return;
+      }
+      if (absX > dragThreshold) {
+        // Confirmed horizontal swipe
+        isSwipePending.current = false;
+      }
+    }
+
+    if (!isSwipePending.current) {
+      e.preventDefault();
+      setOffsetX(deltaX);
+    }
+  }, [isDragging]);
+
+  const handleDragEnd = useCallback(() => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    isSwipePending.current = false;
+
+    if (offsetX > swipeThreshold) {
+      setOffsetX(600);
+      onSwipeRight?.();
+    } else if (offsetX < -swipeThreshold) {
+      setOffsetX(-600);
+      onSwipeLeft?.();
+    } else {
+      setOffsetX(0);
+    }
+  }, [isDragging, offsetX, onSwipeLeft, onSwipeRight]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("a") || target.closest(".custom-scrollbar")) {
+      return;
+    }
+    handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, [handleDragStart]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    handleDragMove(e.touches[0].clientX, e.touches[0].clientY, e);
+  }, [handleDragMove]);
+
+  const handleTouchEnd = useCallback(() => {
+    handleDragEnd();
+  }, [handleDragEnd]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only left click
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("a") || target.closest(".custom-scrollbar")) {
+      return;
+    }
+    handleDragStart(e.clientX, e.clientY);
+  }, [handleDragStart]);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    handleDragMove(e.clientX, e.clientY, e);
+  }, [handleDragMove]);
+
+  const handleMouseUp = useCallback(() => {
+    handleDragEnd();
+  }, [handleDragEnd]);
+
+  const handleMouseLeave = useCallback(() => {
+    handleDragEnd();
+  }, [handleDragEnd]);
 
   const frontRenderer = useMemo(() => {
     switch (question.type) {
@@ -75,7 +174,38 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
   }, [question]);
 
   return (
-    <div className={cn("flip-container w-full max-w-lg mx-auto min-h-[300px] animate-slide-up")}>
+    <div 
+      className={cn("flip-container w-full max-w-lg mx-auto min-h-[300px] animate-slide-up relative select-none")}
+      style={{
+        transform: `translateX(${offsetX}px) rotate(${offsetX * 0.04}deg)`,
+        transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Swipe Left stamp: "重来 / AGAIN" */}
+      <div 
+        className="absolute top-8 right-8 border-4 border-destructive text-destructive font-black uppercase tracking-widest px-4 py-2 rounded-xl text-xs md:text-sm rotate-12 pointer-events-none select-none z-30 transition-opacity duration-75 flex items-center gap-1.5 shadow-lg bg-background/95"
+        style={{ opacity: offsetX < 0 ? Math.min(1, Math.abs(offsetX) / swipeThreshold) : 0 }}
+      >
+        <span className="size-2 rounded-full bg-destructive animate-pulse" />
+        重来 / AGAIN
+      </div>
+
+      {/* Swipe Right stamp: "掌握 / GOOD" */}
+      <div 
+        className="absolute top-8 left-8 border-4 border-emerald-500 text-emerald-500 font-black uppercase tracking-widest px-4 py-2 rounded-xl text-xs md:text-sm -rotate-12 pointer-events-none select-none z-30 transition-opacity duration-75 flex items-center gap-1.5 shadow-lg bg-background/95"
+        style={{ opacity: offsetX > 0 ? Math.min(1, Math.abs(offsetX) / swipeThreshold) : 0 }}
+      >
+        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+        掌握 / GOOD
+      </div>
+
       <div className={cn("flip-inner relative w-full h-full", flipped ? "flip-flipped" : "flip-front")}>
         {/* Front */}
         <Card
@@ -126,7 +256,7 @@ export function QuestionCard({ question, flipped, onFlip }: Props) {
                  <div className="h-px w-10 bg-brand/20" />
                  <p className="text-[10px] text-brand/60 font-medium uppercase tracking-widest">
                   点击返回题目
-                </p>
+                 </p>
               </div>
             )}
           </CardContent>

@@ -167,6 +167,8 @@ export function TodayClient({ initialQueue }: Props) {
                 card={current.card}
                 flipped={flipped}
                 onFlip={handleFlip}
+                onSwipeLeft={() => handleRate("again")}
+                onSwipeRight={() => handleRate("good")}
               />
             </div>
 

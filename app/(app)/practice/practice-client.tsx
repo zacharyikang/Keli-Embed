@@ -184,6 +184,8 @@ export function PracticeClient() {
                 }
                 flipped={flipped}
                 onFlip={handleFlip}
+                onSwipeLeft={() => handleRate("again")}
+                onSwipeRight={() => handleRate("good")}
               />
             </div>
 
