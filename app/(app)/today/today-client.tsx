@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function TodayClient({ initialQueue }: Props) {
-  const [queue] = useState(initialQueue);
+  const [queue, setQueue] = useState(initialQueue);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [weak, setWeak] = useState(false);
@@ -33,6 +33,19 @@ export function TodayClient({ initialQueue }: Props) {
     }
     setFlipped(prev => !prev);
   }, []);
+
+  const handleSkip = useCallback(() => {
+    if (!current || queue.length <= 1) return;
+    
+    const updatedQueue = [...queue];
+    const skippedCard = updatedQueue[index];
+    updatedQueue.splice(index, 1);
+    updatedQueue.push(skippedCard);
+    
+    setQueue(updatedQueue);
+    setFlipped(false);
+    setWeak(false);
+  }, [current, index, queue]);
 
   const handleRate = useCallback(
     async (r: Rating) => {
@@ -80,6 +93,12 @@ export function TodayClient({ initialQueue }: Props) {
         return;
       }
 
+      if ((e.key === "s" || e.key === "S") && !busyRef.current) {
+        e.preventDefault();
+        handleSkip();
+        return;
+      }
+
       if (!flipped || busyRef.current) return;
 
       switch (e.key) {
@@ -104,7 +123,7 @@ export function TodayClient({ initialQueue }: Props) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [flipped, handleFlip, handleRate]);
+  }, [flipped, handleFlip, handleRate, handleSkip]);
 
   // Empty queue
   if (total === 0) {
@@ -142,6 +161,15 @@ export function TodayClient({ initialQueue }: Props) {
       <div className="w-full max-w-lg flex flex-col gap-2 animate-slide-up">
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
           <span className="font-semibold tracking-tight">复习进度：{index + 1} / {total}</span>
+          {total > 1 && (
+            <button 
+              onClick={handleSkip}
+              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-brand hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              title="按 S 键跳过此题"
+            >
+              跳过 / SKIP (S)
+            </button>
+          )}
           <span className="font-mono font-semibold">{progress}%</span>
         </div>
         <div className="relative h-1 w-full bg-foreground/[0.04] rounded-full overflow-hidden">

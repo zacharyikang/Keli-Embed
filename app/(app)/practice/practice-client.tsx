@@ -47,6 +47,18 @@ export function PracticeClient() {
     setFlipped(prev => !prev);
   }, []);
 
+  const handleSkip = useCallback(() => {
+    if (!current || questions.length <= 1) return;
+    
+    const updated = [...questions];
+    const skipped = updated[index];
+    updated.splice(index, 1);
+    updated.push(skipped);
+    
+    setQuestions(updated);
+    setFlipped(false);
+  }, [current, index, questions]);
+
   const handleRate = useCallback(
     (r: Rating) => {
       void r;
@@ -77,6 +89,12 @@ export function PracticeClient() {
         return;
       }
 
+      if ((e.key === "s" || e.key === "S") && !busyRef.current) {
+        e.preventDefault();
+        handleSkip();
+        return;
+      }
+
       if (!flipped || busyRef.current) return;
 
       switch (e.key) {
@@ -92,7 +110,7 @@ export function PracticeClient() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [flipped, handleFlip, handleRate]);
+  }, [flipped, handleFlip, handleRate, handleSkip]);
 
   if (loading) {
     return (
@@ -150,6 +168,15 @@ export function PracticeClient() {
       <div className="w-full max-w-lg flex flex-col gap-2 animate-slide-up">
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
           <span className="font-semibold tracking-tight">练习进度：{index + 1} / {total}</span>
+          {total > 1 && (
+            <button 
+              onClick={handleSkip}
+              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-blue-500 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              title="按 S 键跳过此题"
+            >
+              跳过 / SKIP (S)
+            </button>
+          )}
           <span className="font-mono font-semibold">{progress}%</span>
         </div>
         <div className="relative h-1 w-full bg-foreground/[0.04] rounded-full overflow-hidden">
