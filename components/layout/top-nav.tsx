@@ -57,10 +57,10 @@ export function TopNav() {
       <div className="flex-1" />
 
       {!isLoading && (
-        <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-brand/10 text-brand rounded-full text-xs font-bold border border-brand/20 hover:bg-brand/15 transition-all">
-          <span className="relative flex h-2 w-2">
+        <div className="flex items-center gap-1.5 md:gap-2 px-2 py-0.5 md:px-3 md:py-1 bg-brand/10 text-brand rounded-full text-[10px] md:text-xs font-bold border border-brand/20 hover:bg-brand/15 transition-all shadow-sm shrink-0">
+          <span className="relative flex h-1.5 w-1.5 md:size-2 shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+            <span className="relative inline-flex rounded-full h-full w-full bg-brand"></span>
           </span>
           <span>掌握率: {masteryPercentage}%</span>
         </div>

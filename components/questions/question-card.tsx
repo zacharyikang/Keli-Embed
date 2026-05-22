@@ -41,7 +41,15 @@ function QuestionMeta({ question }: { question: Question }) {
     <div className="flex items-center gap-2 flex-wrap mb-3">
       <span className="text-[10px] text-muted-foreground/60 font-mono tracking-tighter uppercase">{question.id}</span>
       <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{question.direction}</Badge>
-      <Badge variant={difficultyVariant[question.difficulty] ?? "default"} className="text-[10px] uppercase font-bold tracking-wider rounded-md">
+      <Badge
+        variant="outline"
+        className={cn(
+          "text-[10px] uppercase font-bold tracking-wider rounded-md border shrink-0",
+          question.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
+          question.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
+          question.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
+        )}
+      >
         {difficultyLabel[question.difficulty] ?? question.difficulty}
       </Badge>
       <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{typeLabel[question.type] ?? question.type}</Badge>

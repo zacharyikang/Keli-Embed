@@ -100,12 +100,39 @@ export function LibraryClient() {
     }
   }, [searchParams]);
 
+  // Filtered by search query only (for interlocking categories counts)
+  const searchQueryFilteredQuestions = useMemo(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed === "") {
+      return questions;
+    }
+    const query = trimmed.toLowerCase();
+    return questions.filter((q) => {
+      const matchTitle = q.title.toLowerCase().includes(query);
+      const matchBody = q.body.toLowerCase().includes(query);
+      const matchId = q.id.toLowerCase().includes(query);
+      const matchTags = q.tags.some((t) => t.toLowerCase().includes(query));
+      const matchAnswer = q.answer.toLowerCase().includes(query);
+      const matchExplanation = q.explanation?.toLowerCase().includes(query) ?? false;
+      return matchTitle || matchBody || matchId || matchTags || matchAnswer || matchExplanation;
+    });
+  }, [questions, searchQuery]);
+
   // Calculate dynamic stats for sidebar
   const stats = useMemo(() => {
     const directions = new Map<string, { total: number; mastered: number }>();
     const companies = new Map<string, { total: number; mastered: number }>();
 
-    questions.forEach((q) => {
+    // Initialize with all known directions and companies to 0 to prevent layout-shifting
+    Object.keys(directionMeta).forEach((dirSlug) => {
+      directions.set(dirSlug, { total: 0, mastered: 0 });
+    });
+    Object.keys(companyNames).forEach((compSlug) => {
+      companies.set(compSlug, { total: 0, mastered: 0 });
+    });
+
+    // Count matching questions
+    searchQueryFilteredQuestions.forEach((q) => {
       // Directions
       const dir = q.direction;
       const dirCur = directions.get(dir) ?? { total: 0, mastered: 0 };
@@ -122,36 +149,26 @@ export function LibraryClient() {
       });
     });
 
-    return { directions, companies };
-  }, [questions, isMastered]);
+    // Total counts filtered by search query
+    const totalFiltered = searchQueryFilteredQuestions.length;
+    const totalMasteredFiltered = searchQueryFilteredQuestions.filter((q) => isMastered(q.id)).length;
+
+    return { directions, companies, totalFiltered, totalMasteredFiltered };
+  }, [searchQueryFilteredQuestions, isMastered]);
 
   // Filtered list of questions
   const filteredQuestions = useMemo(() => {
-    return questions.filter((q) => {
-      // 1. Category Filter
+    return searchQueryFilteredQuestions.filter((q) => {
+      // Category Filter
       if (category.type === "direction" && q.direction !== category.value) {
         return false;
       }
       if (category.type === "company" && !q.companies.includes(category.value)) {
         return false;
       }
-
-      // 2. Search Query Filter
-      if (searchQuery.trim() !== "") {
-        const query = searchQuery.toLowerCase();
-        const matchTitle = q.title.toLowerCase().includes(query);
-        const matchBody = q.body.toLowerCase().includes(query);
-        const matchId = q.id.toLowerCase().includes(query);
-        const matchTags = q.tags.some((t) => t.toLowerCase().includes(query));
-        const matchAnswer = q.answer.toLowerCase().includes(query);
-        const matchExplanation = q.explanation?.toLowerCase().includes(query) ?? false;
-        
-        return matchTitle || matchBody || matchId || matchTags || matchAnswer || matchExplanation;
-      }
-
       return true;
     });
-  }, [questions, category, searchQuery]);
+  }, [searchQueryFilteredQuestions, category]);
 
   const clearFilters = useCallback(() => {
     setSearchQuery("");
@@ -251,7 +268,7 @@ export function LibraryClient() {
                   <span>全部题库</span>
                 </div>
                 <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
-                  {totalQuestionsCount}
+                  {stats.totalMasteredFiltered}/{stats.totalFiltered}
                 </span>
               </button>
 
@@ -364,7 +381,7 @@ export function LibraryClient() {
                   <div
                     key={q.id}
                     className={cn(
-                      "glass glass-dark rounded-2xl border border-foreground/5 shadow-md overflow-hidden transition-all duration-300 hover:shadow-brand/5 hover:border-brand/20",
+                      "glass glass-dark rounded-2xl border border-foreground/5 shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-brand/10 hover:border-brand/30 hover:scale-[1.01]",
                       isExpanded ? "border-brand/30 shadow-xl bg-foreground/[0.01]" : ""
                     )}
                   >
@@ -402,10 +419,10 @@ export function LibraryClient() {
                               {dirMeta.name}
                             </span>
                             <span className={cn(
-                              "text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider",
-                              q.difficulty === "easy" && "bg-success/15 text-success",
-                              q.difficulty === "medium" && "bg-warning/15 text-warning",
-                              q.difficulty === "hard" && "bg-error/15 text-error"
+                              "text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider border",
+                              q.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
+                              q.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
+                              q.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
                             )}>
                               {difficultyLabel[q.difficulty]}
                             </span>
@@ -436,7 +453,7 @@ export function LibraryClient() {
                         isExpanded ? "grid-rows-[1fr] border-t border-foreground/5 opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"
                       )}
                     >
-                      <div className="overflow-hidden">
+                      <div className="overflow-hidden min-h-0">
                         <div className="py-4 px-5 space-y-4">
                           
                           {/* 1. Body / Question Content */}

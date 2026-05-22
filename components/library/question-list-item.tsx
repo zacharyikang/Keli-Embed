@@ -41,8 +41,13 @@ export function QuestionListItem({
             {question.id}
           </span>
           <Badge
-            variant={difficultyVariant[question.difficulty] ?? "default"}
-            className="text-[10px] shrink-0"
+            variant="outline"
+            className={cn(
+              "text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider border shrink-0",
+              question.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
+              question.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
+              question.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
+            )}
           >
             {difficultyLabel[question.difficulty] ?? question.difficulty}
           </Badge>

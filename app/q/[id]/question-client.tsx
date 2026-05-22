@@ -49,9 +49,9 @@ const difficultyLabel: Record<string, string> = {
 };
 
 const difficultyClass: Record<string, string> = {
-  easy: "bg-success/15 text-success border-success/20",
-  medium: "bg-warning/15 text-warning border-warning/20",
-  hard: "bg-error/15 text-error border-error/20",
+  easy: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
+  medium: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
+  hard: "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20",
 };
 
 const typeLabel: Record<string, string> = {
