@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMastery } from "@/components/providers/mastery-provider";
@@ -68,6 +68,35 @@ export function LibraryClient() {
   const [category, setCategory] = useState<{ type: "all" | "direction" | "company"; value: string }>({ type: "all", value: "" });
   const [activeTab, setActiveTab] = useState<"directions" | "companies">("directions");
   const [expandedQid, setExpandedQid] = useState<string | null>(null);
+
+  // Sliding Indicator Refs and Style
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [indicatorStyle, setIndicatorStyle] = useState<{ top: number; height: number }>({ top: 0, height: 0 });
+
+  // Sliding Indicator Effect
+  useEffect(() => {
+    const activeKey = category.type === "all" ? "all" : `${category.type}:${category.value}`;
+    
+    const updateIndicator = () => {
+      const activeButton = buttonRefs.current[activeKey];
+      const container = containerRef.current;
+      if (activeButton && container) {
+        const activeRect = activeButton.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        setIndicatorStyle({
+          top: activeRect.top - containerRect.top + container.scrollTop,
+          height: activeRect.height,
+        });
+      } else {
+        setIndicatorStyle({ top: 0, height: 0 });
+      }
+    };
+    
+    updateIndicator();
+    const rafId = requestAnimationFrame(updateIndicator);
+    return () => cancelAnimationFrame(rafId);
+  }, [category, activeTab, loading]);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -237,15 +266,13 @@ export function LibraryClient() {
           </div>
 
           {/* Category Tabs Widget */}
-          <div className="glass glass-dark rounded-2xl border border-foreground/5 p-5 space-y-3.5 shadow-xl">
-            <div className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-2">分类目录</div>
-            
+          <div className="glass glass-dark rounded-2xl border border-foreground/5 p-5 space-y-4">
             {/* Category Selector Tabs */}
             <div className="grid grid-cols-2 bg-foreground/[0.02] p-1 rounded-xl border border-foreground/5 h-9">
               <button
                 onClick={() => setActiveTab("directions")}
                 className={cn(
-                  "font-black text-[9px] uppercase tracking-wider rounded-lg transition-all",
+                  "font-black text-[9px] uppercase tracking-wider rounded-lg transition-all cursor-pointer",
                   activeTab === "directions"
                     ? "bg-foreground text-background shadow"
                     : "text-muted-foreground hover:text-foreground"
@@ -256,7 +283,7 @@ export function LibraryClient() {
               <button
                 onClick={() => setActiveTab("companies")}
                 className={cn(
-                  "font-black text-[9px] uppercase tracking-wider rounded-lg transition-all",
+                  "font-black text-[9px] uppercase tracking-wider rounded-lg transition-all cursor-pointer",
                   activeTab === "companies"
                     ? "bg-foreground text-background shadow"
                     : "text-muted-foreground hover:text-foreground"
@@ -267,19 +294,34 @@ export function LibraryClient() {
             </div>
 
             {/* List items inside Sidebar */}
-            <div className="space-y-1 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
+            <div 
+              ref={containerRef}
+              className="space-y-1 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin relative"
+            >
+              {/* Sliding Highlight Capsule */}
+              {indicatorStyle.height > 0 && (
+                <div 
+                  className="absolute left-0 w-full bg-brand/10 border-l-2 border-brand pointer-events-none transition-all duration-300 ease-out rounded-r-lg z-0"
+                  style={{
+                    top: `${indicatorStyle.top}px`,
+                    height: `${indicatorStyle.height}px`,
+                  }}
+                />
+              )}
+
               {/* "All" button */}
               <button
+                ref={(el) => { buttonRefs.current["all"] = el; }}
                 onClick={() => handleCategoryChange({ type: "all", value: "" })}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
+                  "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-colors duration-200 border-none relative z-10 cursor-pointer",
                   category.type === "all"
-                    ? "bg-brand/10 border-brand/30 text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                    ? "text-foreground font-bold"
+                    : "text-muted-foreground hover:text-foreground/80"
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <CircleDot className="size-3.5 text-brand shrink-0" />
+                  <CircleDot className={cn("size-3.5 shrink-0 transition-colors", category.type === "all" ? "text-brand" : "text-muted-foreground/60")} />
                   <span>全部题库</span>
                 </div>
                 <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
@@ -295,16 +337,17 @@ export function LibraryClient() {
                 return (
                   <button
                     key={dirSlug}
+                    ref={(el) => { buttonRefs.current[`direction:${dirSlug}`] = el; }}
                     onClick={() => handleCategoryChange({ type: "direction", value: dirSlug })}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-colors duration-200 border-none relative z-10 cursor-pointer",
                       isSelected
-                        ? "bg-brand/10 border-brand/30 text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                        ? "text-foreground font-bold"
+                        : "text-muted-foreground hover:text-foreground/80"
                     )}
                   >
                     <div className="flex items-center gap-2 min-w-0">
-                      <Icon className={cn("size-3.5 shrink-0", isSelected ? "text-brand" : "text-muted-foreground/60")} />
+                      <Icon className={cn("size-3.5 shrink-0 transition-colors", isSelected ? "text-brand" : "text-muted-foreground/60")} />
                       <span className="truncate">{meta.name}</span>
                     </div>
                     <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
@@ -321,16 +364,17 @@ export function LibraryClient() {
                 return (
                   <button
                     key={compSlug}
+                    ref={(el) => { buttonRefs.current[`company:${compSlug}`] = el; }}
                     onClick={() => handleCategoryChange({ type: "company", value: compSlug })}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
+                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-colors duration-200 border-none relative z-10 cursor-pointer",
                       isSelected
-                        ? "bg-brand/10 border-brand/30 text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                        ? "text-foreground font-bold"
+                        : "text-muted-foreground hover:text-foreground/80"
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <div className={cn("size-1 rounded-full shrink-0", isSelected ? "bg-brand" : "bg-muted-foreground/40")} />
+                      <div className={cn("size-1 rounded-full shrink-0 transition-colors", isSelected ? "bg-brand" : "bg-muted-foreground/40")} />
                       <span>{name}</span>
                     </div>
                     <span className="font-mono text-[9px] bg-foreground/5 px-2 py-0.5 rounded text-muted-foreground">
@@ -368,21 +412,37 @@ export function LibraryClient() {
 
           {/* List and Accordions */}
           {filteredQuestions.length === 0 ? (
-            <div className="glass glass-dark rounded-2xl border border-foreground/5 p-10 text-center space-y-4.5 shadow-xl">
-              <div className="size-12 bg-muted/30 text-muted-foreground flex items-center justify-center rounded-xl mx-auto">
-                <RotateCcw className="size-6" />
+            <div className="glass glass-dark rounded-2xl border border-foreground/5 p-12 text-center space-y-5 shadow-xl">
+              <div className="mx-auto flex items-center justify-center">
+                <svg className="size-20 stroke-muted-foreground/30 fill-none" viewBox="0 0 64 64">
+                  {/* Central chip */}
+                  <rect x="20" y="20" width="24" height="24" rx="4" className="stroke-muted-foreground/40 stroke-2" />
+                  <rect x="25" y="25" width="14" height="14" rx="2" className="stroke-brand/20 fill-brand/5" />
+                  
+                  {/* Pins */}
+                  <path d="M26 20v-4M32 20v-4M38 20v-4M26 44v4M32 44v4M38 44v4M20 26h-4M20 32h-4M20 38h-4M44 26h4M44 32h4M44 38h4" strokeWidth="2" strokeLinecap="round" />
+                  
+                  {/* Broken traces / disconnected wires */}
+                  <path d="M12 12h8v4M12 52h8v-4M52 12h-8v4M52 52h-8v-4" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M14 26h-4M50 38h4" strokeWidth="1.5" strokeLinecap="round" className="stroke-destructive/60" />
+                  
+                  {/* Disconnected dots */}
+                  <circle cx="8" cy="26" r="1.5" className="fill-destructive/60" />
+                  <circle cx="56" cy="38" r="1.5" className="fill-destructive/60" />
+                  <circle cx="32" cy="32" r="1" className="fill-brand animate-ping" />
+                </svg>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <h3 className="text-base font-black tracking-tight">未找到匹配题目</h3>
-                <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                  尝试更换左侧的知识目录分类，或在输入框中精简搜索关键字。
+                <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                  当前知识分类或过滤条件下无对应内容。您可以重置检索条件，或者返回全部题库目录。
                 </p>
               </div>
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 rounded-full bg-foreground text-background font-black text-[10px] uppercase tracking-wider hover:bg-brand hover:text-black transition-all shadow-md active:scale-95"
+                className="px-6 py-2.5 rounded-full bg-brand text-black font-black text-[10px] uppercase tracking-wider hover:bg-brand-hover hover:scale-105 transition-all shadow-lg active:scale-95"
               >
-                重置过滤条件
+                清除搜索条件并返回
               </button>
             </div>
           ) : (
@@ -435,12 +495,13 @@ export function LibraryClient() {
                             </span>
                             <span className={cn(
                               "text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider border",
-                              q.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
-                              q.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
-                              q.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
+                              q.difficulty === "easy" && "badge-easy",
+                              q.difficulty === "medium" && "badge-medium",
+                              q.difficulty === "hard" && "badge-hard"
                             )}>
                               {difficultyLabel[q.difficulty]}
                             </span>
+
                           </div>
                           
                           <h3 className={cn(
@@ -578,6 +639,7 @@ export function LibraryClient() {
         </div>
 
       </div>
+
     </div>
   );
 }

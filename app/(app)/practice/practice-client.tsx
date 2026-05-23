@@ -37,6 +37,7 @@ export function PracticeClient() {
   }, []);
 
   const current = questions[index] ?? null;
+  const nextQuestion = questions[index + 1] ?? undefined;
   const total = questions.length;
   const progress = total > 0 ? Math.round((index / total) * 100) : 0;
 
@@ -195,6 +196,7 @@ export function PracticeClient() {
                <QuestionCard
                 key={current.id}
                 question={current}
+                nextQuestion={nextQuestion}
                 card={
                   {
                     questionId: current.id,

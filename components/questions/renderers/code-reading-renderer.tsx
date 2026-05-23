@@ -5,10 +5,14 @@ type Props = { question: Question; showAnswer: boolean };
 export function CodeReadingRenderer({ question, showAnswer }: Props) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-lg border bg-muted/50 p-3 overflow-x-auto">
-        <pre className="text-xs sm:text-sm font-mono leading-relaxed whitespace-pre-wrap">
-          {question.body}
-        </pre>
+      <div className="relative group/code w-full">
+        <div className="rounded-lg border bg-muted/50 p-3 overflow-x-auto custom-scrollbar">
+          <pre className="text-xs sm:text-sm font-mono leading-relaxed whitespace-pre">
+            {question.body}
+          </pre>
+        </div>
+        {/* Right-side gradient overlay indicating scroll availability */}
+        <div className="pointer-events-none absolute right-px top-px bottom-px w-8 rounded-r-lg bg-gradient-to-l from-background/40 to-transparent opacity-80" />
       </div>
       {showAnswer && (
         <div className="rounded-lg border bg-muted/50 p-3.5">
