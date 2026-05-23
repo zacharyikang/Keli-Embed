@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useMastery } from "@/components/providers/mastery-provider";
 import { listAllQuestionsAction } from "@/lib/actions/library-actions";
 import type { Question } from "@/lib/domain";
@@ -70,6 +70,19 @@ export function LibraryClient() {
   const [expandedQid, setExpandedQid] = useState<string | null>(null);
 
   const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const handleCategoryChange = useCallback((newCategory: { type: "all" | "direction" | "company"; value: string }) => {
+    setCategory(newCategory);
+    const params = new URLSearchParams();
+    if (newCategory.type === "direction") {
+      params.set("dir", newCategory.value);
+    } else if (newCategory.type === "company") {
+      params.set("company", newCategory.value);
+    }
+    const queryStr = params.toString() ? `?${params.toString()}` : "";
+    router.replace(`/library${queryStr}`, { scroll: false });
+  }, [router]);
 
   // Load questions on mount
   useEffect(() => {
@@ -97,6 +110,8 @@ export function LibraryClient() {
     } else if (company) {
       setCategory({ type: "company", value: company });
       setActiveTab("companies");
+    } else {
+      setCategory({ type: "all", value: "" });
     }
   }, [searchParams]);
 
@@ -172,8 +187,8 @@ export function LibraryClient() {
 
   const clearFilters = useCallback(() => {
     setSearchQuery("");
-    setCategory({ type: "all", value: "" });
-  }, []);
+    handleCategoryChange({ type: "all", value: "" });
+  }, [handleCategoryChange]);
 
   if (loading) {
     return (
@@ -255,7 +270,7 @@ export function LibraryClient() {
             <div className="space-y-1 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
               {/* "All" button */}
               <button
-                onClick={() => setCategory({ type: "all", value: "" })}
+                onClick={() => handleCategoryChange({ type: "all", value: "" })}
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
                   category.type === "all"
@@ -280,7 +295,7 @@ export function LibraryClient() {
                 return (
                   <button
                     key={dirSlug}
-                    onClick={() => setCategory({ type: "direction", value: dirSlug })}
+                    onClick={() => handleCategoryChange({ type: "direction", value: dirSlug })}
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
                       isSelected
@@ -306,7 +321,7 @@ export function LibraryClient() {
                 return (
                   <button
                     key={compSlug}
-                    onClick={() => setCategory({ type: "company", value: compSlug })}
+                    onClick={() => handleCategoryChange({ type: "company", value: compSlug })}
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs font-semibold transition-all border",
                       isSelected

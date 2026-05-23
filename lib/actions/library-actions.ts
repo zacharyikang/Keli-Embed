@@ -93,3 +93,10 @@ export async function updateCardMasteryAction(
   }
 }
 
+export async function getQuestionByIdAction(id: string): Promise<Question | null> {
+  const supabase = await createServerSupabase();
+  const questionStore = new SupabaseQuestionStore(supabase);
+  return questionStore.getById(id);
+}
+
+

@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { BookOpen, BarChart3, Swords, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
 import { useMastery } from "@/components/providers/mastery-provider";
+import { getQuestionByIdAction } from "@/lib/actions/library-actions";
 
 const navItems = [
   { href: "/today", label: "今日复习", icon: Zap },
@@ -14,25 +16,119 @@ const navItems = [
   { href: "/weak", label: "薄弱点", icon: BarChart3 },
 ];
 
+function TopNavTitle() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [questionTitle, setQuestionTitle] = useState<string>("");
+
+  useEffect(() => {
+    if (pathname.startsWith("/q/")) {
+      const id = pathname.split("/q/")[1]?.split("/")[0];
+      if (id) {
+        getQuestionByIdAction(id)
+          .then((question) => {
+            if (question) {
+              setQuestionTitle(question.title);
+            } else {
+              setQuestionTitle("题目详情");
+            }
+          })
+          .catch(() => {
+            setQuestionTitle("题目详情");
+          });
+      }
+    } else {
+      setQuestionTitle("");
+    }
+  }, [pathname]);
+
+  const getPageTitle = () => {
+    if (pathname.startsWith("/today")) {
+      return "今日复习";
+    }
+    if (pathname.startsWith("/practice")) {
+      return "自由练习";
+    }
+    if (pathname.startsWith("/weak")) {
+      return "薄弱点";
+    }
+    if (pathname.startsWith("/stats")) {
+      return "进度统计";
+    }
+    if (pathname.startsWith("/settings")) {
+      return "设置";
+    }
+    if (pathname.startsWith("/q/")) {
+      return questionTitle || "加载中...";
+    }
+    if (pathname.startsWith("/library")) {
+      const company = searchParams?.get("company");
+      const dir = searchParams?.get("dir");
+      if (company) {
+        const companyNames: Record<string, string> = {
+          huawei: "华为",
+          dji: "大疆",
+          xiaomi: "小米",
+          hikvision: "海康威视",
+          byd: "比亚迪",
+        };
+        return (companyNames[company] || company) + "真题";
+      }
+      if (dir) {
+        const directionNames: Record<string, string> = {
+          "c-language": "C 语言",
+          mcu: "MCU 裸机开发",
+          rtos: "RTOS",
+          protocol: "通信协议",
+          "linux-embedded": "Linux 嵌入式",
+          algorithm: "数据结构与算法",
+          "interview-mixed": "面试综合",
+        };
+        return directionNames[dir] || dir;
+      }
+      return "题库";
+    }
+    return "";
+  };
+
+  const pageTitle = getPageTitle();
+
+  if (!pageTitle) return null;
+
+  return (
+    <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-semibold text-muted-foreground select-none shrink-0 min-w-0">
+      <span className="text-muted-foreground/30 font-light">/</span>
+      <span className="text-foreground truncate max-w-[120px] sm:max-w-[200px] md:max-w-[320px]">
+        {pageTitle}
+      </span>
+    </div>
+  );
+}
+
 export function TopNav() {
   const pathname = usePathname();
   const { masteryPercentage, isLoading } = useMastery();
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center gap-2 md:gap-4 border-b bg-background px-2 md:px-4">
-      <Link
-        href="/"
-        className="flex items-center gap-1.5 md:gap-2 font-black text-lg tracking-tighter shrink-0 hover:opacity-80 transition-opacity group"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 bg-brand/40 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-          <span className="relative flex size-8 items-center justify-center rounded-lg bg-foreground text-background font-black text-sm border border-foreground/10">
-            ES
-          </span>
-        </div>
-        <span className="hidden sm:inline text-foreground tracking-[0.1em] uppercase">EmbedStudio</span>
-      </Link>
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+        <Link
+          href="/"
+          className="flex items-center gap-1.5 md:gap-2 font-black text-lg tracking-tighter shrink-0 hover:opacity-80 transition-opacity group"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-brand/40 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <span className="relative flex size-8 items-center justify-center rounded-lg bg-foreground text-background font-black text-sm border border-foreground/10">
+              ES
+            </span>
+          </div>
+          <span className="hidden sm:inline text-foreground tracking-[0.1em] uppercase">EmbedStudio</span>
+        </Link>
 
+        <Suspense fallback={null}>
+          <TopNavTitle />
+        </Suspense>
+      </div>
 
       <nav className="flex items-center gap-1 ml-2 md:ml-4 overflow-x-auto scrollbar-none whitespace-nowrap">
         {navItems.map(({ href, label }) => {
@@ -73,4 +169,5 @@ export function TopNav() {
     </header>
   );
 }
+
 
