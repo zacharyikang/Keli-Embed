@@ -178,9 +178,11 @@
   animation: blob 7s infinite;
 }
 @utility animate-flip-to-back {
+  transition: none !important;
   animation: flip-to-back 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 @utility animate-flip-to-front {
+  transition: none !important;
   animation: flip-to-front 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 @utility animate-stamp-bounce-left {
@@ -235,7 +237,6 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-style: preserve-3d;
 }
 .flip-inner.flip-flipped {
