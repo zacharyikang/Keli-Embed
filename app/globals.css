@@ -153,11 +153,14 @@
 
 
 
-/* Card flip animation optimized */
+/* Card flip animation optimized with CSS Grid overlap */
 .flip-container {
   perspective: 2000px;
 }
 .flip-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-style: preserve-3d;
 }
@@ -165,13 +168,32 @@
   transform: rotateY(180deg);
 }
 .flip-face {
+  grid-area: 1 / 1;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 .flip-back {
-  position: absolute;
-  inset: 0;
   transform: rotateY(180deg);
+}
+
+/* Custom premium scrollbar utility */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(var(--foreground) / 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--foreground) / 0.2);
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--foreground) / 0.1) transparent;
 }
 
 

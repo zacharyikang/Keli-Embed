@@ -58,7 +58,7 @@ export function ChoiceRenderer({ question, showAnswer }: Props) {
         <div className="mt-2 rounded-lg border bg-muted/50 p-3.5">
           <h3 className="text-xs font-semibold text-muted-foreground mb-1">解析</h3>
           <p className="text-[13px] text-muted-foreground/90 leading-relaxed whitespace-pre-wrap">
-            {question.explanation}
+            {question.explanation.replace(/\\n/g, "\n")}
           </p>
         </div>
       )}

@@ -175,7 +175,7 @@ answer: "第一行答案\\n第二行答案"
 
     const result = parseMarkdownQuestion(md);
 
-    expect(result.answer).toBe("第一行答案\\n第二行答案");
+    expect(result.answer).toBe("第一行答案\n第二行答案");
   });
 
   it("parses premium flag", () => {

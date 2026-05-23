@@ -183,7 +183,7 @@ export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRi
 
   return (
     <div 
-      className={cn("flip-container w-full max-w-lg mx-auto min-h-[300px] animate-slide-up relative select-none")}
+      className={cn("flip-container w-full max-w-3xl mx-auto min-h-[360px] animate-slide-up relative select-none")}
       style={{
         transform: `translateX(${offsetX}px) rotate(${offsetX * 0.04}deg)`,
         transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
@@ -231,12 +231,12 @@ export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRi
               </div>
             )}
           </CardHeader>
-          <CardContent className="p-4 sm:p-5 pt-0">
-            <div className="mt-2 opacity-80 leading-relaxed">
+          <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
+            <div className="mt-2 opacity-80 leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
               {frontRenderer}
             </div>
             {!flipped && (
-              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5">
+              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
                  <div className="h-px w-10 bg-muted-foreground/20" />
                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
                   点击查看答案
@@ -255,12 +255,12 @@ export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRi
             <QuestionMeta question={question} />
             <CardTitle className="text-base sm:text-lg font-bold leading-tight text-brand">{question.title}</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 sm:p-5 pt-0 overflow-y-auto max-h-[220px] custom-scrollbar">
-            <div className="leading-relaxed">
+          <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
+            <div className="leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
               {backRenderer}
             </div>
             {flipped && (
-              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5">
+              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
                  <div className="h-px w-10 bg-brand/20" />
                  <p className="text-[10px] text-brand/60 font-medium uppercase tracking-widest">
                   点击返回题目

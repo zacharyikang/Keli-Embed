@@ -143,11 +143,13 @@ function parseFrontmatter(content: string): {
       case "type":
       case "direction":
       case "difficulty":
-      case "answer":
-      case "explanation":
       case "source":
       case "interviewRound":
         frontmatter[key] = rawVal.replace(/^["']|["']$/g, "");
+        break;
+      case "answer":
+      case "explanation":
+        frontmatter[key] = rawVal.replace(/^["']|["']$/g, "").replace(/\\n/g, "\n");
         break;
       case "companies":
         try {

@@ -41,7 +41,7 @@ type Props = {
 
 export function RatingBar({ onRate, disabled }: Props) {
   return (
-    <div className="flex gap-3 w-full max-w-lg mx-auto">
+    <div className="flex gap-3 w-full max-w-3xl mx-auto">
       {ratingConfig.map(({ value, label, key, color, glow }) => (
         <button
           key={value}

@@ -165,7 +165,7 @@ export function PracticeClient() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
       {/* Header Info */}
-      <div className="w-full max-w-lg flex flex-col gap-2 animate-slide-up">
+      <div className="w-full max-w-3xl flex flex-col gap-2 animate-slide-up">
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
           <span className="font-semibold tracking-tight">练习进度：{index + 1} / {total}</span>
           {total > 1 && (
@@ -217,7 +217,7 @@ export function PracticeClient() {
             </div>
 
             {/* Controller Module */}
-            <div className="w-full max-w-lg flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="w-full max-w-3xl flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
                 <div className="px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 italic border-foreground/5">
                    RANDOM // NO-RECORD

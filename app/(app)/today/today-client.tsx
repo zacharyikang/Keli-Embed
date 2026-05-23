@@ -158,7 +158,7 @@ export function TodayClient({ initialQueue }: Props) {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-20" />
 
       {/* Header Info */}
-      <div className="w-full max-w-lg flex flex-col gap-2 animate-slide-up">
+      <div className="w-full max-w-3xl flex flex-col gap-2 animate-slide-up">
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
           <span className="font-semibold tracking-tight">复习进度：{index + 1} / {total}</span>
           {total > 1 && (
@@ -201,7 +201,7 @@ export function TodayClient({ initialQueue }: Props) {
             </div>
 
             {/* Controller Module */}
-            <div className="w-full max-w-lg flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="w-full max-w-3xl flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
                 <WeakBadge
                   isWeak={weak}
