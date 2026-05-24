@@ -1,19 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Zap, BookOpen, BarChart3, Settings } from "lucide-react";
+import { Zap, BookOpen, BarChart3, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
   { href: "/today", label: "复习", icon: Zap },
   { href: "/library", label: "题库", icon: BookOpen },
   { href: "/stats", label: "统计", icon: BarChart3 },
-  { href: "/settings", label: "设置", icon: Settings },
 ];
 
 export function BottomTabs() {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  if (isCollapsed) {
+    return (
+      <div className="fixed bottom-8 left-6 z-50 pointer-events-none">
+        <button
+          onClick={() => setIsCollapsed(false)}
+          className="size-12 flex items-center justify-center glass glass-dark rounded-full pointer-events-auto shadow-xl border-foreground/10 hover:bg-foreground/5 transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+          title="展开导航栏"
+        >
+          <ChevronRight className="size-6" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed bottom-8 inset-x-0 z-50 flex justify-center px-6 pointer-events-none">
@@ -47,6 +62,18 @@ export function BottomTabs() {
             </Link>
           );
         })}
+        
+        {/* Collapse Button */}
+        <button
+          onClick={() => setIsCollapsed(true)}
+          className="flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-foreground/5 group"
+          title="收起导航栏"
+        >
+          <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
+          <span className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 max-w-0 group-hover:max-w-[100px] transition-all duration-500 overflow-hidden">
+            收起
+          </span>
+        </button>
       </nav>
     </div>
   );
