@@ -160,7 +160,7 @@ export function PracticeClient() {
   }
 
   return (
-    <div className="relative flex flex-col items-center gap-4 md:gap-6 px-6 py-4 md:py-6 min-h-[90vh] w-full max-w-5xl mx-auto overflow-y-auto">
+    <div className="relative flex flex-col items-center gap-4 md:gap-6 px-6 pt-4 pb-32 md:pt-6 md:pb-40 min-h-[90vh] w-full max-w-5xl mx-auto overflow-y-auto">
       {/* Background Depth Sync */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
