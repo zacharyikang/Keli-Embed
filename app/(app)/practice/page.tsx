@@ -1,7 +1,13 @@
 import { Suspense } from "react";
 import { PracticeClient } from "./practice-client";
 
-export default function PracticePage() {
+export default async function PracticePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ dir?: string; company?: string }>;
+}) {
+  const params = await searchParams;
+
   return (
     <Suspense
       fallback={
@@ -11,7 +17,7 @@ export default function PracticePage() {
         </div>
       }
     >
-      <PracticeClient />
+      <PracticeClient dir={params.dir} company={params.company} />
     </Suspense>
   );
 }

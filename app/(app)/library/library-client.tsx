@@ -196,7 +196,7 @@ export function LibraryClient() {
     let title = "";
     let sub = "";
     let practiceUrl = "";
-    let IconComponent = HelpCircle;
+    let IconComponent: ComponentType<{ className?: string }> = HelpCircle;
 
     if (category.type === "direction") {
       const meta = directionMeta[category.value] ?? { name: category.value, icon: HelpCircle };
