@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const tabs = [
   { href: "/today", label: "复习", icon: Zap },
   { href: "/library", label: "题库", icon: BookOpen },
-  { href: "/stats", label: "统计", icon: BarChart3 },
+  { href: "/weak", label: "薄弱点", icon: BarChart3 },
 ];
 
 export function BottomTabs() {
