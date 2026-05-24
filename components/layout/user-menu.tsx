@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Settings } from "lucide-react";
 import { useUser, useSignOut, useAuthLoading } from "@/lib/auth/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -62,12 +62,20 @@ export function UserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => router.push("/settings")}
+          onSelect={() => router.push("/stats")}
           className="cursor-pointer"
         >
           <User className="mr-2 size-4" />
+          个人主页
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => router.push("/settings")}
+          className="cursor-pointer"
+        >
+          <Settings className="mr-2 size-4" />
           设置
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => signOut()}
           className="cursor-pointer"
