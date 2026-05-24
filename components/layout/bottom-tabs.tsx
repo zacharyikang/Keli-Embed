@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Zap, BookOpen, BarChart3, ChevronDown, ChevronRight } from "lucide-react";
+import { Zap, BookOpen, BarChart3, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -69,7 +69,7 @@ export function BottomTabs() {
           className="flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 text-muted-foreground hover:text-foreground hover:bg-foreground/5 group"
           title="收起导航栏"
         >
-          <ChevronDown className="size-5 transition-transform group-hover:translate-y-0.5" />
+          <ChevronLeft className="size-5 transition-transform group-hover:-translate-x-0.5" />
           <span className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 max-w-0 group-hover:max-w-[100px] transition-all duration-500 overflow-hidden">
             收起
           </span>
