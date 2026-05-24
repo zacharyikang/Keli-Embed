@@ -1,18 +1,8 @@
 "use client";
 
-import { createContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import type { SupabaseClient, Session, User } from "@supabase/supabase-js";
 import { createBrowserSupabase } from "@/lib/storage/supabase/client";
-
-const MOCK_USER: User = {
-  id: "default-user",
-  email: "dev@embedstudio.local",
-  aud: "authenticated",
-  role: "authenticated",
-  app_metadata: {},
-  user_metadata: {},
-  created_at: new Date().toISOString(),
-} as User;
 
 type AuthState = {
   supabase: SupabaseClient;
@@ -32,7 +22,29 @@ export const AuthContext = createContext<AuthState>({
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [supabase] = useState(() => createBrowserSupabase());
-  const [user] = useState<User | null>(MOCK_USER);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
@@ -40,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ supabase, user, session: null, signOut, loading: false }}
+      value={{ supabase, user, session, signOut, loading }}
     >
       {children}
     </AuthContext.Provider>
