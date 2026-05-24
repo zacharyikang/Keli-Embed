@@ -5,8 +5,6 @@ import type { Rating } from "@/lib/domain";
 import type { ScheduledCard } from "@/lib/srs";
 import { QuestionCard } from "@/components/questions/question-card";
 import { RatingBar } from "@/components/questions/rating-bar";
-import { WeakBadge } from "@/components/questions/weak-badge";
-import { Progress } from "@/components/ui/progress";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { submitAnswerAction, toggleWeakAction } from "@/lib/actions/review-actions";
@@ -234,5 +232,4 @@ export function TodayClient({ initialQueue }: Props) {
 
   );
 }
-
 

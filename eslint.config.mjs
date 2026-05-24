@@ -11,6 +11,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "node_modules/**",
     "next-env.d.ts",
+    ".agents/**",
+    ".claude/**",
+    ".gstack/**",
   ]),
   {
     files: ["lib/srs/**", "lib/domain/**"],

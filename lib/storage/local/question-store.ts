@@ -28,13 +28,14 @@ export class LocalQuestionStore implements QuestionStore {
 
   async findNewCandidates(
     _userId: string,
-    _limit: number,
+    limit: number,
+    excludeQuestionIds: readonly string[] = [],
   ): Promise<Question[]> {
-    // Params intentionally unused — LocalStore returns all questions.
-    // Service layer uses CardStore to filter learned questions.
+    const excluded = new Set(excludeQuestionIds);
     void _userId;
-    void _limit;
-    return this.questions;
+    return this.questions
+      .filter((q) => !excluded.has(q.id))
+      .slice(0, limit);
   }
 
   async search(filters: QuestionFilters): Promise<Question[]> {

@@ -1,6 +1,6 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Zap, BookOpen, Target, Brain, BarChart3, Star } from "lucide-react";
+import { Zap, BookOpen, Target, Brain, BarChart3 } from "lucide-react";
 
 export default function Home() {
   return (

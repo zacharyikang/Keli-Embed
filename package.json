@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:supabase": "RUN_SUPABASE_CONTRACTS=1 vitest run tests/storage/contract-card-store.test.ts tests/storage/contract-question-store.test.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },

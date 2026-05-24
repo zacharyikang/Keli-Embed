@@ -16,6 +16,7 @@ function createTestClient() {
 const userA = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 const userB = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
 const testUserIds = [userA, userB];
+const runSupabaseContracts = process.env.RUN_SUPABASE_CONTRACTS === "1";
 
 const cardStoreQuestionIds = [
   "rt-q-001",
@@ -37,8 +38,10 @@ const cardStoreQuestionIds = [
 ];
 
 describe.each([
-  ["LocalCardStore", () => new LocalCardStore()],
-  ["SupabaseCardStore", () => new SupabaseCardStore(createTestClient())],
+  ["LocalCardStore", () => new LocalCardStore()] as const,
+  ...(runSupabaseContracts
+    ? [["SupabaseCardStore", () => new SupabaseCardStore(createTestClient())] as const]
+    : []),
 ])("CardStore contract: %s", (name, createStore) => {
   let store: CardStore;
 
@@ -103,7 +106,7 @@ describe.each([
     store = createStore();
     try {
       globalThis.localStorage?.clear();
-    } catch (e) {}
+    } catch {}
 
     if (name === "SupabaseCardStore") {
       const client = createTestClient();

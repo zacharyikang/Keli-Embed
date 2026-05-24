@@ -22,59 +22,79 @@ function mapRowToQuestion(row: Record<string, unknown>): Question {
   };
 }
 
+function formatPostgrestInList(values: readonly string[]): string {
+  const quoted = values.map((value) => {
+    const escaped = value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    return `"${escaped}"`;
+  });
+  return `(${quoted.join(",")})`;
+}
+
 export class SupabaseQuestionStore implements QuestionStore {
   constructor(private supabase: SupabaseClient) {}
 
   async getById(id: string): Promise<Question | null> {
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from("questions")
       .select("*")
       .eq("id", id)
       .is("deleted_at", null)
-      .single();
+      .maybeSingle();
 
+    if (error) throw error;
     return data ? mapRowToQuestion(data) : null;
   }
 
   async findByIds(ids: string[]): Promise<Question[]> {
     if (ids.length === 0) return [];
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from("questions")
       .select("*")
       .in("id", ids)
       .is("deleted_at", null);
 
+    if (error) throw error;
     return (data as Record<string, unknown>[] | null)?.map(mapRowToQuestion) ?? [];
   }
 
   async findByDirection(direction: string): Promise<Question[]> {
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from("questions")
       .select("*")
       .eq("direction", direction)
       .is("deleted_at", null);
 
+    if (error) throw error;
     return (data as Record<string, unknown>[] | null)?.map(mapRowToQuestion) ?? [];
   }
 
   async findByCompany(companySlug: string): Promise<Question[]> {
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from("questions")
       .select("*")
       .contains("companies", [companySlug])
       .is("deleted_at", null);
 
+    if (error) throw error;
     return (data as Record<string, unknown>[] | null)?.map(mapRowToQuestion) ?? [];
   }
 
-  async findNewCandidates(_userId: string, limit: number): Promise<Question[]> {
-    // Get all non-deleted questions. Service layer filters out learned ones.
-    const { data } = await this.supabase
+  async findNewCandidates(
+    _userId: string,
+    limit: number,
+    excludeQuestionIds: readonly string[] = [],
+  ): Promise<Question[]> {
+    let query = this.supabase
       .from("questions")
       .select("*")
-      .is("deleted_at", null)
-      .limit(limit);
+      .is("deleted_at", null);
 
+    if (excludeQuestionIds.length > 0) {
+      query = query.not("id", "in", formatPostgrestInList(excludeQuestionIds));
+    }
+
+    const { data, error } = await query.limit(limit);
+    if (error) throw error;
     return (data as Record<string, unknown>[] | null)?.map(mapRowToQuestion) ?? [];
   }
 
@@ -99,7 +119,8 @@ export class SupabaseQuestionStore implements QuestionStore {
       );
     }
 
-    const { data } = await query;
+    const { data, error } = await query;
+    if (error) throw error;
     return (data as Record<string, unknown>[] | null)?.map(mapRowToQuestion) ?? [];
   }
 }

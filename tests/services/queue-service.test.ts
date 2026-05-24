@@ -113,6 +113,28 @@ describe("getTodayQueue", () => {
     expect(newCards.length).toBeLessThanOrEqual(2);
   });
 
+  it("does not schedule cards with existing user state as new cards", async () => {
+    const deps = makeDeps();
+    const userId = "test-user-existing-state";
+
+    await deps.cardStore.save(userId, {
+      ...emptyCardState("q-a1"),
+      totalReviews: 1,
+      dueAt: new Date("2026-06-20T12:00:00Z"),
+    });
+
+    const queue = await getTodayQueue(deps, userId, now, {
+      dailyNewLimit: 3,
+      dailyTotalLimit: 50,
+    });
+
+    const newCardIds = queue
+      .filter((item) => item.priority === 2)
+      .map((item) => item.card.questionId);
+
+    expect(newCardIds).not.toContain("q-a1");
+  });
+
   it("returns empty array when nothing due/weak and no new candidates", async () => {
     const deps = makeDeps();
     const userId = "test-user-3";

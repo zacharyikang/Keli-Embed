@@ -15,15 +15,23 @@ export async function getTodayQueue(
   const weakCards = states.filter((s) => s.isWeak);
   const dueCards = states.filter((s) => !s.isWeak && s.dueAt <= now);
 
+  const existingCards = await deps.cardStore.findByUser(userId);
+  const existingQuestionIds = existingCards.map((card) => card.questionId);
+  const existingQuestionIdSet = new Set(existingQuestionIds);
+
   const candidates = await deps.questionStore.findNewCandidates(
     userId,
     dailyNewLimit * 5,
+    existingQuestionIds,
+  );
+  const unseenCandidates = candidates.filter(
+    (question) => !existingQuestionIdSet.has(question.id),
   );
 
   return buildTodayQueue({
     weakCards,
     dueCards,
-    newCardsCandidates: candidates,
+    newCardsCandidates: unseenCandidates,
     dailyNewLimit,
     dailyTotalLimit,
   });

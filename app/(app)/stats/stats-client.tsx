@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser, useAuthLoading } from "@/lib/auth/client";
 import { getStatsAction } from "@/lib/actions/stats-actions";
 import type { UserStats } from "@/lib/services/stats-service";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
 import { Heatmap } from "@/components/stats/heatmap";
 import { DirectionProgressList } from "@/components/stats/direction-progress";
 import { buttonVariants } from "@/components/ui/button";
@@ -182,4 +181,3 @@ export function StatsClient() {
     </div>
   );
 }
-

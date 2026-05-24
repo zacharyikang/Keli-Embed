@@ -11,12 +11,6 @@ const difficultyLabel: Record<string, string> = {
   hard: "困难",
 };
 
-const difficultyVariant: Record<string, "default" | "secondary" | "destructive"> = {
-  easy: "default",
-  medium: "secondary",
-  hard: "destructive",
-};
-
 const typeLabel: Record<string, string> = {
   concept: "概念题",
   choice: "选择题",

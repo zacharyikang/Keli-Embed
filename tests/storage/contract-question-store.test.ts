@@ -77,6 +77,7 @@ const seedQuestions: Question[] = [
 ];
 
 const testIds = ["q1", "q2", "q3", "q4"];
+const runSupabaseContracts = process.env.RUN_SUPABASE_CONTRACTS === "1";
 
 function createTestClient() {
   return createClient(
@@ -87,8 +88,10 @@ function createTestClient() {
 }
 
 describe.each([
-  ["LocalQuestionStore", () => new LocalQuestionStore(seedQuestions)],
-  ["SupabaseQuestionStore", () => new SupabaseQuestionStore(createTestClient())],
+  ["LocalQuestionStore", () => new LocalQuestionStore(seedQuestions)] as const,
+  ...(runSupabaseContracts
+    ? [["SupabaseQuestionStore", () => new SupabaseQuestionStore(createTestClient())] as const]
+    : []),
 ])("QuestionStore contract: %s", (name, createStore) => {
   const store: QuestionStore = createStore();
 

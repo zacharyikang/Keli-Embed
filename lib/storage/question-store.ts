@@ -13,6 +13,10 @@ export interface QuestionStore {
   findByIds(ids: string[]): Promise<Question[]>;
   findByDirection(direction: string): Promise<Question[]>;
   findByCompany(companySlug: string): Promise<Question[]>;
-  findNewCandidates(userId: string, limit: number): Promise<Question[]>;
+  findNewCandidates(
+    userId: string,
+    limit: number,
+    excludeQuestionIds?: readonly string[],
+  ): Promise<Question[]>;
   search(filters: QuestionFilters): Promise<Question[]>;
 }

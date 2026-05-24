@@ -34,10 +34,11 @@ export class SupabaseReviewLogStore implements ReviewLogStore {
   constructor(private supabase: SupabaseClient) {}
 
   async append(
-    _userId: string,
+    userId: string,
     log: Omit<ReviewLog, "id" | "userId">,
   ): Promise<void> {
     const { error } = await this.supabase.from("review_logs").insert({
+      user_id: userId,
       question_id: log.questionId,
       rating: log.rating,
       prev_interval: log.prevInterval,
@@ -51,33 +52,37 @@ export class SupabaseReviewLogStore implements ReviewLogStore {
   }
 
   async findByUser(
-    _userId: string,
+    userId: string,
     limit?: number,
     offset?: number,
   ): Promise<ReviewLog[]> {
     let query = this.supabase
       .from("review_logs")
       .select("*")
+      .eq("user_id", userId)
       .order("reviewed_at", { ascending: false });
 
     if (offset) query = query.range(offset, offset + (limit ?? 50) - 1);
     else if (limit) query = query.limit(limit);
 
-    const { data } = await query;
+    const { data, error } = await query;
+    if (error) throw error;
     return (data as LogRow[] | null)?.map(mapRowToLog) ?? [];
   }
 
   async countByDateRange(
-    _userId: string,
+    userId: string,
     start: Date,
     end: Date,
   ): Promise<Record<string, number>> {
-    const { data } = await this.supabase
+    const { data, error } = await this.supabase
       .from("review_logs")
       .select("reviewed_at")
+      .eq("user_id", userId)
       .gte("reviewed_at", start.toISOString())
       .lte("reviewed_at", end.toISOString());
 
+    if (error) throw error;
     const rows = data as { reviewed_at: string }[] | null;
     const result: Record<string, number> = {};
     for (const row of rows ?? []) {

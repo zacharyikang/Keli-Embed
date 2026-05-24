@@ -162,7 +162,6 @@ export function QuestionClient({ question }: { question: Question }) {
           <div className="grid grid-cols-1 gap-2">
             {choices.map((choice) => {
               const state = getChoiceState(choice.id);
-              const isSelected = selectedChoice === choice.id;
 
               return (
                 <button
