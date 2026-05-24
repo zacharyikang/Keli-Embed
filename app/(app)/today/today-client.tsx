@@ -194,6 +194,8 @@ export function TodayClient({ initialQueue }: Props) {
                 question={current.question}
                 card={current.card}
                 flipped={flipped}
+                isWeak={weak}
+                onToggleWeak={handleToggleWeak}
                 onFlip={handleFlip}
                 onSwipeLeft={() => handleRate("again")}
                 onSwipeRight={() => handleRate("good")}
@@ -202,16 +204,6 @@ export function TodayClient({ initialQueue }: Props) {
 
             {/* Controller Module */}
             <div className="w-full max-w-3xl flex flex-col gap-4 md:gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
-                <WeakBadge
-                  isWeak={weak}
-                  onToggle={handleToggleWeak}
-                />
-                <div className="px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-foreground/50 border-foreground/10">
-                   {current.question.direction.replace('-', ' ')} // PR-GRADE
-                </div>
-              </div>
-
               <div className="w-full space-y-2">
                 <RatingBar
                   onRate={handleRate}

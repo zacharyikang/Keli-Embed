@@ -31,33 +31,65 @@ type Props = {
   question: Question;
   card: CardState;
   flipped?: boolean;
+  isWeak?: boolean;
+  onToggleWeak?: () => void;
   onFlip?: () => void;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
 };
 
-function QuestionMeta({ question }: { question: Question }) {
+function QuestionMeta({ 
+  question, 
+  isWeak, 
+  onToggleWeak 
+}: { 
+  question: Question; 
+  isWeak?: boolean; 
+  onToggleWeak?: () => void;
+}) {
   return (
-    <div className="flex items-center gap-2 flex-wrap mb-3">
-      <span className="text-[10px] text-muted-foreground/60 font-mono tracking-tighter uppercase">{question.id}</span>
-      <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{question.direction}</Badge>
-      <Badge
-        variant="outline"
-        className={cn(
-          "text-[10px] uppercase font-bold tracking-wider rounded-md border shrink-0",
-          question.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
-          question.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
-          question.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
-        )}
-      >
-        {difficultyLabel[question.difficulty] ?? question.difficulty}
-      </Badge>
-      <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{typeLabel[question.type] ?? question.type}</Badge>
+    <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-[10px] text-muted-foreground/60 font-mono tracking-tighter uppercase">{question.id}</span>
+        <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{question.direction}</Badge>
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-[10px] uppercase font-bold tracking-wider rounded-md border shrink-0",
+            question.difficulty === "easy" && "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/20",
+            question.difficulty === "medium" && "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20",
+            question.difficulty === "hard" && "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/20"
+          )}
+        >
+          {difficultyLabel[question.difficulty] ?? question.difficulty}
+        </Badge>
+        <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider rounded-md border-muted-foreground/20">{typeLabel[question.type] ?? question.type}</Badge>
+      </div>
+
+      {onToggleWeak && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleWeak();
+          }}
+          className={cn(
+            "size-8 flex items-center justify-center rounded-full transition-all duration-300",
+            isWeak 
+              ? "text-warning bg-warning/10" 
+              : "text-muted-foreground/30 hover:text-foreground hover:bg-foreground/5"
+          )}
+          title={isWeak ? "取消标记薄弱" : "标记薄弱点"}
+        >
+          <span className={cn("text-lg", isWeak && "animate-pulse")}>
+            {isWeak ? "★" : "☆"}
+          </span>
+        </button>
+      )}
     </div>
   );
 }
 
-export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRight }: Props) {
+export function QuestionCard({ question, flipped, isWeak, onToggleWeak, onFlip, onSwipeLeft, onSwipeRight }: Props) {
   const handleClick = useCallback(() => {
     onFlip?.();
   }, [onFlip]);
@@ -215,60 +247,60 @@ export function QuestionCard({ question, flipped, onFlip, onSwipeLeft, onSwipeRi
       </div>
 
       <div className={cn("flip-inner relative w-full h-full", flipped ? "flip-flipped" : "flip-front")}>
-        {/* Front */}
-        <Card
-          className="flip-face flip-front cursor-pointer select-none h-full glass glass-dark rounded-2xl border border-white/5 shadow-2xl transition-all duration-500 hover:border-brand/30 group"
-          onClick={handleClick}
-        >
-          <CardHeader className="p-4 sm:p-5 pb-2.5 sm:pb-3">
-            <QuestionMeta question={question} />
-            <CardTitle className="text-base sm:text-lg font-bold leading-tight group-hover:text-brand transition-colors">{question.title}</CardTitle>
-            {question.tags.length > 0 && (
-              <div className="flex gap-1.5 flex-wrap mt-3">
-                {question.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-[10px] rounded-full bg-white/5 border-none px-2.5">{tag}</Badge>
-                ))}
+          {/* Front */}
+          <Card
+            className="flip-face flip-front cursor-pointer select-none h-full glass glass-dark rounded-2xl border border-white/5 shadow-2xl transition-all duration-500 hover:border-brand/30 group"
+            onClick={handleClick}
+          >
+            <CardHeader className="p-4 sm:p-5 pb-2.5 sm:pb-3">
+              <QuestionMeta question={question} isWeak={isWeak} onToggleWeak={onToggleWeak} />
+              <CardTitle className="text-base sm:text-lg font-bold leading-tight group-hover:text-brand transition-colors">{question.title}</CardTitle>
+              {question.tags.length > 0 && (
+                <div className="flex gap-1.5 flex-wrap mt-3">
+                  {question.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-[10px] rounded-full bg-white/5 border-none px-2.5">{tag}</Badge>
+                  ))}
+                </div>
+              )}
+            </CardHeader>
+            <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
+              <div className="mt-2 opacity-80 leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
+                {frontRenderer}
               </div>
-            )}
-          </CardHeader>
-          <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
-            <div className="mt-2 opacity-80 leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
-              {frontRenderer}
-            </div>
-            {!flipped && (
-              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
-                 <div className="h-px w-10 bg-muted-foreground/20" />
-                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
-                  点击查看答案
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              {!flipped && (
+                <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
+                   <div className="h-px w-10 bg-muted-foreground/20" />
+                   <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
+                    点击查看答案
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Back */}
-        <Card 
-          className="flip-face flip-back cursor-pointer select-none h-full glass glass-dark rounded-2xl border border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)] transition-all duration-500 hover:border-brand/40 group"
-          onClick={handleClick}
-        >
-          <CardHeader className="p-4 sm:p-5 pb-2.5 sm:pb-3">
-            <QuestionMeta question={question} />
-            <CardTitle className="text-base sm:text-lg font-bold leading-tight text-brand">{question.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
-            <div className="leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
-              {backRenderer}
-            </div>
-            {flipped && (
-              <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
-                 <div className="h-px w-10 bg-brand/20" />
-                 <p className="text-[10px] text-brand/60 font-medium uppercase tracking-widest">
-                  点击返回题目
-                 </p>
+          {/* Back */}
+          <Card 
+            className="flip-face flip-back cursor-pointer select-none h-full glass glass-dark rounded-2xl border border-brand/20 shadow-[0_0_50px_-12px_var(--color-brand)] transition-all duration-500 hover:border-brand/40 group"
+            onClick={handleClick}
+          >
+            <CardHeader className="p-4 sm:p-5 pb-2.5 sm:pb-3">
+              <QuestionMeta question={question} isWeak={isWeak} onToggleWeak={onToggleWeak} />
+              <CardTitle className="text-base sm:text-lg font-bold leading-tight text-brand">{question.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-5 pt-0 flex-1 flex flex-col justify-between">
+              <div className="leading-relaxed max-h-[320px] overflow-y-auto pr-1.5 custom-scrollbar">
+                {backRenderer}
               </div>
-            )}
-          </CardContent>
-        </Card>
+              {flipped && (
+                <div className="mt-4 sm:mt-5 flex flex-col items-center gap-1.5 pt-4">
+                   <div className="h-px w-10 bg-brand/20" />
+                   <p className="text-[10px] text-brand/60 font-medium uppercase tracking-widest">
+                    点击返回题目
+                   </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
       </div>
     </div>
   );

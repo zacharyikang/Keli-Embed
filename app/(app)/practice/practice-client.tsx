@@ -218,16 +218,6 @@ export function PracticeClient() {
 
             {/* Controller Module */}
             <div className="w-full max-w-3xl flex flex-col gap-4 md:gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
-                <div className="px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 italic border-foreground/5">
-                   RANDOM // NO-RECORD
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-blue-400/80 border-blue-400/10">
-                   <div className="size-1.5 rounded-full bg-blue-400 animate-pulse" />
-                   练习模式
-                </div>
-              </div>
-
               <div className="w-full space-y-2">
                 <RatingBar
                   onRate={handleRate}
