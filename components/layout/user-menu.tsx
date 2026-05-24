@@ -8,6 +8,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -41,12 +42,11 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={(triggerProps) => (
+        render={
           <Button
             variant="ghost"
             size="icon"
             className="rounded-full"
-            {...triggerProps}
           >
             <Avatar className="size-8">
               <AvatarFallback className="text-xs bg-brand text-black font-bold">
@@ -54,22 +54,24 @@ export function UserMenu() {
               </AvatarFallback>
             </Avatar>
           </Button>
-        )}
+        }
       />
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuLabel className="text-xs text-muted-foreground truncate">
-          {user.email}
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="text-xs text-muted-foreground truncate">
+            {user.email}
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => router.push("/stats")}
+          onClick={() => router.push("/stats")}
           className="cursor-pointer"
         >
           <User className="mr-2 size-4" />
           个人主页
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={() => router.push("/settings")}
+          onClick={() => router.push("/settings")}
           className="cursor-pointer"
         >
           <Settings className="mr-2 size-4" />
@@ -77,7 +79,7 @@ export function UserMenu() {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => signOut()}
+          onClick={() => signOut()}
           className="cursor-pointer"
         >
           <LogOut className="mr-2 size-4" />
