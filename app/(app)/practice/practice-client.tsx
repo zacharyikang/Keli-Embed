@@ -5,11 +5,35 @@ import { getRandomQuestionsAction } from "@/lib/actions/explore-actions";
 import type { Question, CardState, Rating } from "@/lib/domain";
 import { QuestionCard } from "@/components/questions/question-card";
 import { RatingBar } from "@/components/questions/rating-bar";
-import { Progress } from "@/components/ui/progress";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export function PracticeClient() {
+const directionNames: Record<string, string> = {
+  "c-language": "C 语言",
+  mcu: "MCU 裸机开发",
+  rtos: "RTOS",
+  protocol: "通信协议",
+  "linux-embedded": "Linux 嵌入式",
+  algorithm: "数据结构与算法",
+  hardware: "硬件基础",
+  "interview-mixed": "面试综合",
+};
+
+const companyNames: Record<string, string> = {
+  huawei: "华为",
+  dji: "大疆",
+  xiaomi: "小米",
+  hikvision: "海康威视",
+  byd: "比亚迪",
+};
+
+export function PracticeClient({ dir = "", company = "" }: { dir?: string; company?: string }) {
+  const categoryLabel = dir
+    ? directionNames[dir] || dir
+    : company
+    ? `${companyNames[company] || company}真题`
+    : "";
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -20,10 +44,16 @@ export function PracticeClient() {
 
   useEffect(() => {
     let cancelled = false;
-    getRandomQuestionsAction(20)
+    getRandomQuestionsAction(20, {
+      direction: dir || undefined,
+      companySlug: company || undefined,
+    })
       .then((qs) => {
         if (!cancelled) {
           setQuestions(qs);
+          setIndex(0);
+          setFlipped(false);
+          setDone(false);
           setLoading(false);
         }
       })
@@ -33,8 +63,10 @@ export function PracticeClient() {
           setLoading(false);
         }
       });
-    return () => { cancelled = true; };
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [dir, company]);
 
   const current = questions[index] ?? null;
   const total = questions.length;
@@ -139,7 +171,9 @@ export function PracticeClient() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
         <h2 className="text-2xl font-bold">题库为空</h2>
-        <p className="text-muted-foreground">还没有题目，请稍后再来</p>
+        <p className="text-muted-foreground">
+          {categoryLabel ? `"${categoryLabel}" 题库中` : ""}还没有题目，请稍后再来
+        </p>
         <a href="/library" className={cn(buttonVariants({ variant: "outline" }))}>
           去题库看看
         </a>
@@ -148,11 +182,19 @@ export function PracticeClient() {
   }
 
   if (done) {
+    const restartUrl = dir
+      ? `/practice?dir=${dir}`
+      : company
+      ? `/practice?company=${company}`
+      : "/practice";
+
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
         <h2 className="text-2xl font-bold">练习完成</h2>
-        <p className="text-muted-foreground">已练习了 {total} 题</p>
-        <a href="/practice" className={cn(buttonVariants({ variant: "outline" }))}>
+        <p className="text-muted-foreground">
+          {categoryLabel ? `"${categoryLabel}" ` : ""}已练习了 {total} 题
+        </p>
+        <a href={restartUrl} className={cn(buttonVariants({ variant: "outline" }))}>
           再来一轮
         </a>
       </div>
@@ -165,7 +207,14 @@ export function PracticeClient() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
       {/* Header Info */}
-      <div className="w-full max-w-3xl flex flex-col gap-2 animate-slide-up">
+      <div className="w-full max-w-3xl flex flex-col gap-2.5 animate-slide-up">
+        {categoryLabel && (
+          <div className="flex items-center gap-1.5 self-start">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand bg-brand/10 border border-brand/20 px-3 py-0.5 rounded-full shadow-sm">
+              正在练习：{categoryLabel}
+            </span>
+          </div>
+        )}
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
           <span className="font-semibold tracking-tight">练习进度：{index + 1} / {total}</span>
           {total > 1 && (

@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, type ComponentType } from "react";
 import Link from "next/link";
 import { useMastery } from "@/components/providers/mastery-provider";
 import type { Question } from "@/lib/domain";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { 
-  CheckCircle, 
   CheckCircle2, 
   ChevronLeft, 
   Tag, 
@@ -19,12 +17,10 @@ import {
   Radio, 
   Terminal, 
   Binary, 
-  Microchip,
-  Calendar,
-  Building
+  Microchip
 } from "lucide-react";
 
-const directionMeta: Record<string, { name: string; icon: any }> = {
+const directionMeta: Record<string, { name: string; icon: ComponentType<{ className?: string }> }> = {
   "c-language": { name: "C 语言", icon: BookOpen },
   mcu: { name: "MCU 裸机开发", icon: Cpu },
   rtos: { name: "RTOS", icon: Layers },

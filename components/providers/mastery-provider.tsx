@@ -38,7 +38,10 @@ export function MasteryProvider({ children }: { children: ReactNode }) {
       if (cachedCount) {
         const parsed = parseInt(cachedCount, 10);
         if (!isNaN(parsed) && parsed > 0) {
-          setTotalQuestionsCountState(parsed);
+          const timer = setTimeout(() => {
+            setTotalQuestionsCountState(parsed);
+          }, 0);
+          return () => clearTimeout(timer);
         }
       }
     }

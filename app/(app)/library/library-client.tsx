@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, type ComponentType } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMastery } from "@/components/providers/mastery-provider";
 import { listAllQuestionsAction } from "@/lib/actions/library-actions";
 import type { Question } from "@/lib/domain";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import {
   BookOpen,
   Cpu,
@@ -17,7 +15,6 @@ import {
   Binary,
   Layers,
   Search,
-  CheckCircle,
   HelpCircle,
   ChevronDown,
   ExternalLink,
@@ -29,7 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const directionMeta: Record<string, { name: string; icon: any }> = {
+const directionMeta: Record<string, { name: string; icon: ComponentType<{ className?: string }> }> = {
   "c-language": { name: "C 语言", icon: BookOpen },
   mcu: { name: "MCU 裸机开发", icon: Cpu },
   rtos: { name: "RTOS", icon: Layers },
@@ -104,15 +101,18 @@ export function LibraryClient() {
   useEffect(() => {
     const dir = searchParams.get("dir");
     const company = searchParams.get("company");
-    if (dir) {
-      setCategory({ type: "direction", value: dir });
-      setActiveTab("directions");
-    } else if (company) {
-      setCategory({ type: "company", value: company });
-      setActiveTab("companies");
-    } else {
-      setCategory({ type: "all", value: "" });
-    }
+    const timer = setTimeout(() => {
+      if (dir) {
+        setCategory({ type: "direction", value: dir });
+        setActiveTab("directions");
+      } else if (company) {
+        setCategory({ type: "company", value: company });
+        setActiveTab("companies");
+      } else {
+        setCategory({ type: "all", value: "" });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [searchParams]);
 
   // Filtered by search query only (for interlocking categories counts)
@@ -189,6 +189,51 @@ export function LibraryClient() {
     setSearchQuery("");
     handleCategoryChange({ type: "all", value: "" });
   }, [handleCategoryChange]);
+
+  const categoryBanner = useMemo(() => {
+    if (category.type === "all") return null;
+
+    let title = "";
+    let sub = "";
+    let practiceUrl = "";
+    let IconComponent = HelpCircle;
+
+    if (category.type === "direction") {
+      const meta = directionMeta[category.value] ?? { name: category.value, icon: HelpCircle };
+      title = meta.name;
+      IconComponent = meta.icon;
+      const progress = stats.directions.get(category.value) ?? { total: 0, mastered: 0 };
+      sub = `包含 ${progress.total} 道专业题，您已掌握 ${progress.mastered} 道。`;
+      practiceUrl = `/practice?dir=${category.value}`;
+    } else if (category.type === "company") {
+      title = `${companyNames[category.value] ?? category.value} 真题`;
+      IconComponent = Tag;
+      const progress = stats.companies.get(category.value) ?? { total: 0, mastered: 0 };
+      sub = `收集了 ${progress.total} 道面试真题，您已掌握 ${progress.mastered} 道。`;
+      practiceUrl = `/practice?company=${category.value}`;
+    }
+
+    return (
+      <div className="glass glass-dark rounded-2xl border border-brand/20 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg shadow-brand/[0.03] animate-slide-up">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="size-10 bg-brand/10 border border-brand/20 text-brand flex items-center justify-center rounded-xl shrink-0">
+            <IconComponent className="size-5" />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <h2 className="text-base font-black tracking-tight">{title}</h2>
+            <p className="text-xs text-muted-foreground">{sub}</p>
+          </div>
+        </div>
+        
+        <Link
+          href={practiceUrl}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-brand text-black font-black text-xs uppercase tracking-wider hover:bg-brand/90 hover:scale-105 active:scale-95 transition-all shadow-md shadow-brand/10 hover:shadow-brand/20 shrink-0 text-center"
+        >
+          <span>⚡ 开始刷题 (卡片模式)</span>
+        </Link>
+      </div>
+    );
+  }, [category, stats]);
 
   if (loading) {
     return (
@@ -346,6 +391,8 @@ export function LibraryClient() {
         {/* Right Content Panel (Column 8 of 12) */}
         <div className="lg:col-span-8 space-y-4">
           
+          {categoryBanner}
+
           {/* Search bar */}
           <div className="relative w-full">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />

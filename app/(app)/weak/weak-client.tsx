@@ -8,7 +8,6 @@ import type { Question, CardState } from "@/lib/domain";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Star, Trash2, ArrowUpDown } from "lucide-react";
 
@@ -188,7 +187,7 @@ export function WeakClient() {
                       {card.weakMarkedAt && (
                         <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/60 font-mono font-bold uppercase tracking-tighter">
                            <span className="size-1 rounded-full bg-foreground/10" />
-                           标记于 {new Date(card.weakMarkedAt).toLocaleDateString("zh-CN")} // DIAG-LOG
+                           标记于 {new Date(card.weakMarkedAt).toLocaleDateString("zh-CN")}
                         </div>
                       )}
                     </div>

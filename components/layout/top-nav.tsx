@@ -38,7 +38,10 @@ function TopNavTitle() {
           });
       }
     } else {
-      setQuestionTitle("");
+      const timer = setTimeout(() => {
+        setQuestionTitle("");
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [pathname]);
 

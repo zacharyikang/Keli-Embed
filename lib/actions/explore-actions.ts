@@ -7,11 +7,15 @@ import type { Question, CardState } from "@/lib/domain";
 
 export async function getRandomQuestionsAction(
   limit = 20,
+  filters?: { direction?: string; companySlug?: string },
 ): Promise<Question[]> {
   const supabase = await createServerSupabase();
   const questionStore = new SupabaseQuestionStore(supabase);
 
-  const all = await questionStore.search({});
+  const all = await questionStore.search({
+    direction: filters?.direction,
+    companySlug: filters?.companySlug,
+  });
 
   // Shuffle and take limit
   const shuffled = [...all].sort(() => Math.random() - 0.5);
