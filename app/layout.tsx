@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Outfit, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/lib/utils/theme-provider";
 import { AuthProvider } from "@/lib/auth/provider";
 import { ToastProvider } from "@/components/toast-provider";
 import { MasteryProvider } from "@/components/providers/mastery-provider";
 import "./globals.css";
 
-const outfitSans = Outfit({
+const geistSans = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${outfitSans.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
       <head>

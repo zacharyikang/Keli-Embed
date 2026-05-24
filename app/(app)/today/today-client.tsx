@@ -24,7 +24,6 @@ export function TodayClient({ initialQueue }: Props) {
   const busyRef = useRef(false);
 
   const current = queue[index] ?? null;
-  const nextQuestion = queue[index + 1]?.question ?? undefined;
   const total = queue.length;
   const progress = total > 0 ? Math.round((index / total) * 100) : 0;
 
@@ -193,7 +192,6 @@ export function TodayClient({ initialQueue }: Props) {
                <QuestionCard
                 key={current.question.id}
                 question={current.question}
-                nextQuestion={nextQuestion}
                 card={current.card}
                 flipped={flipped}
                 onFlip={handleFlip}

@@ -108,31 +108,9 @@ function TopNavTitle() {
 export function TopNav() {
   const pathname = usePathname();
   const { masteryPercentage, isLoading } = useMastery();
-  const [visible, setVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY <= 10) {
-        setVisible(true);
-      } else if (currentScrollY > lastScrollY) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   return (
-    <header className={cn(
-      "sticky top-0 z-50 flex h-14 items-center gap-2 md:gap-4 border-b bg-background px-2 md:px-4 transition-transform duration-300 ease-in-out",
-      visible ? "translate-y-0" : "-translate-y-full"
-    )}>
+    <header className="sticky top-0 z-50 flex h-14 items-center gap-2 md:gap-4 border-b bg-background px-2 md:px-4">
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
         <Link
           href="/"
