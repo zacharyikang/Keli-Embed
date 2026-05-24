@@ -160,7 +160,7 @@ export function PracticeClient() {
   }
 
   return (
-    <div className="relative flex flex-col items-center gap-6 md:gap-8 px-6 py-8 md:py-10 min-h-[90vh] w-full max-w-5xl mx-auto overflow-hidden">
+    <div className="relative flex flex-col items-center gap-4 md:gap-6 px-6 py-4 md:py-6 min-h-[90vh] w-full max-w-5xl mx-auto overflow-y-auto">
       {/* Background Depth Sync */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.02] blur-[150px] rounded-full -z-10 animate-pulse-glow" />
 
@@ -188,7 +188,7 @@ export function PracticeClient() {
       </div>
 
       {/* Card Section */}
-      <div className="w-full flex flex-col gap-6 md:gap-8 items-center">
+      <div className="w-full flex flex-col gap-4 md:gap-6 items-center">
         {current && (
           <>
             <div className="w-full relative">
@@ -217,7 +217,7 @@ export function PracticeClient() {
             </div>
 
             {/* Controller Module */}
-            <div className="w-full max-w-3xl flex flex-col gap-6 md:gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <div className="w-full max-w-3xl flex flex-col gap-4 md:gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center justify-between w-full border-b border-foreground/5 pb-3">
                 <div className="px-3 py-1.5 rounded-full glass glass-dark text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 italic border-foreground/5">
                    RANDOM // NO-RECORD
@@ -228,13 +228,13 @@ export function PracticeClient() {
                 </div>
               </div>
 
-              <div className="w-full space-y-4">
+              <div className="w-full space-y-2">
                 <RatingBar
                   onRate={handleRate}
                   disabled={!flipped}
                 />
 
-                <div className="flex justify-center pt-3">
+                <div className="flex justify-center pt-1">
                   <div className="flex items-center gap-2.5 px-5 py-1.5 rounded-full bg-foreground/[0.02] border border-foreground/5 shadow-inner">
                     <span className="size-1.5 rounded-full bg-foreground/10" />
                     <p className="text-[9px] text-foreground/40 font-black uppercase tracking-[0.2em]">
@@ -251,6 +251,7 @@ export function PracticeClient() {
         )}
       </div>
     </div>
+
   );
 }
 
