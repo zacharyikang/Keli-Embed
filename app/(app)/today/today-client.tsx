@@ -213,10 +213,6 @@ export function TodayClient({ initialQueue }: Props) {
               </div>
 
               <div className="w-full space-y-2">
-                <div className="flex flex-col items-center gap-1">
-                   <span className="text-[9px] font-black uppercase tracking-[0.4em] text-foreground/20">Input Feedback</span>
-                </div>
-                
                 <RatingBar
                   onRate={handleRate}
                   disabled={!flipped}
