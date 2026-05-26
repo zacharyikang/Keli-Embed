@@ -301,8 +301,4 @@ export function TodayClient({ initialQueue }: Props) {
       <div className="h-32 md:h-40 w-full shrink-0" aria-hidden="true" />
     </div>
   );
-
-
-  );
 }
-
