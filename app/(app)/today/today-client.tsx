@@ -15,15 +15,22 @@ type Props = {
 
 export function TodayClient({ initialQueue }: Props) {
   const [queue, setQueue] = useState(initialQueue);
-  const [index, setIndex] = useState(0);
+  const [completedCount, setCompletedCount] = useState(0);
+  const [initialTotal] = useState(initialQueue.length);
+  const [history, setHistory] = useState<Array<{ queue: ScheduledCard[]; completedCount: number }>>([]);
   const [flipped, setFlipped] = useState(false);
   const [weak, setWeak] = useState(false);
   const [done, setDone] = useState(false);
   const busyRef = useRef(false);
 
-  const current = queue[index] ?? null;
-  const total = queue.length;
-  const progress = total > 0 ? Math.round((index / total) * 100) : 0;
+  const current = queue[0] ?? null;
+  const progress = initialTotal > 0 ? Math.round((completedCount / initialTotal) * 100) : 0;
+
+  useEffect(() => {
+    if (current) {
+      setWeak(current.card.isWeak);
+    }
+  }, [current]);
 
   const handleFlip = useCallback(() => {
     if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
@@ -33,22 +40,25 @@ export function TodayClient({ initialQueue }: Props) {
   }, []);
 
   const handleSkip = useCallback(() => {
-    if (!current || queue.length <= 1) return;
+    if (queue.length <= 1) return;
     
-    const updatedQueue = [...queue];
-    const skippedCard = updatedQueue[index];
-    updatedQueue.splice(index, 1);
-    updatedQueue.push(skippedCard);
-    
-    setQueue(updatedQueue);
+    // Save snapshot to history
+    setHistory(prev => [...prev, { queue, completedCount }]);
+
+    setQueue(prev => {
+      const [first, ...rest] = prev;
+      return [...rest, first];
+    });
     setFlipped(false);
-    setWeak(false);
-  }, [current, index, queue]);
+  }, [queue, completedCount]);
 
   const handleRate = useCallback(
     async (r: Rating) => {
       if (!current || busyRef.current) return;
       busyRef.current = true;
+
+      // Save snapshot to history
+      setHistory(prev => [...prev, { queue, completedCount }]);
 
       try {
         await submitAnswerAction(current.card.questionId, r);
@@ -56,24 +66,58 @@ export function TodayClient({ initialQueue }: Props) {
         // Silently fail — toast system in Phase 9
       }
 
-      const nextIndex = index + 1;
-      if (nextIndex >= total) {
-        setDone(true);
-      } else {
-        setIndex(nextIndex);
+      if (r === "again") {
+        // Re-queue the card 3 slots later (or at the end)
+        setQueue(prev => {
+          const next = [...prev.slice(1)];
+          const insertIdx = Math.min(3, next.length);
+          next.splice(insertIdx, 0, prev[0]);
+          return next;
+        });
         setFlipped(false);
-        setWeak(false);
+      } else {
+        const nextQueue = queue.slice(1);
+        setCompletedCount(prev => prev + 1);
+        setQueue(nextQueue);
+        setFlipped(false);
+        if (nextQueue.length === 0) {
+          setDone(true);
+        }
       }
       busyRef.current = false;
     },
-    [current, index, total],
+    [current, queue, completedCount],
   );
+
+  const handleUndo = useCallback(() => {
+    if (history.length === 0) return;
+
+    const lastState = history[history.length - 1];
+    setQueue(lastState.queue);
+    setCompletedCount(lastState.completedCount);
+    setHistory(prev => prev.slice(0, -1));
+    setFlipped(false);
+    setDone(false);
+  }, [history]);
 
   const handleToggleWeak = useCallback(async () => {
     if (!current) return;
     try {
       const isWeak = await toggleWeakAction(current.card.questionId);
       setWeak(isWeak);
+      setQueue(prev => {
+        const next = [...prev];
+        if (next[0]) {
+          next[0] = {
+            ...next[0],
+            card: {
+              ...next[0].card,
+              isWeak,
+            }
+          };
+        }
+        return next;
+      });
     } catch {
       // Silently fail
     }
@@ -94,6 +138,12 @@ export function TodayClient({ initialQueue }: Props) {
       if ((e.key === "s" || e.key === "S") && !busyRef.current) {
         e.preventDefault();
         handleSkip();
+        return;
+      }
+
+      if ((e.key === "z" || e.key === "Z") && !busyRef.current) {
+        e.preventDefault();
+        handleUndo();
         return;
       }
 
@@ -121,10 +171,10 @@ export function TodayClient({ initialQueue }: Props) {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [flipped, handleFlip, handleRate, handleSkip]);
+  }, [flipped, handleFlip, handleRate, handleSkip, handleUndo]);
 
   // Empty queue
-  if (total === 0) {
+  if (initialTotal === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
         <h2 className="text-2xl font-bold">今日复习已完成！</h2>
@@ -140,11 +190,21 @@ export function TodayClient({ initialQueue }: Props) {
   if (done) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4">
-        <h2 className="text-2xl font-bold">今日答了 {total} 题</h2>
+        <h2 className="text-2xl font-bold">今日答了 {initialTotal} 题</h2>
         <p className="text-muted-foreground">坚持每天复习，效果更好！</p>
-        <a href="/library" className={cn(buttonVariants({ variant: "outline" }))}>
-          去题库看看
-        </a>
+        <div className="flex items-center gap-4">
+          {history.length > 0 && (
+            <button 
+              onClick={handleUndo}
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              撤销上一步 (Z)
+            </button>
+          )}
+          <a href="/library" className={cn(buttonVariants({ variant: "default" }))}>
+            去题库看看
+          </a>
+        </div>
       </div>
     );
   }
@@ -158,16 +218,28 @@ export function TodayClient({ initialQueue }: Props) {
       {/* Header Info */}
       <div className="w-full max-w-3xl flex flex-col gap-2 animate-slide-up">
         <div className="flex items-center justify-between px-0.5 text-xs text-muted-foreground/60">
-          <span className="font-semibold tracking-tight">复习进度：{index + 1} / {total}</span>
-          {total > 1 && (
-            <button 
-              onClick={handleSkip}
-              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-brand hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
-              title="按 S 键跳过此题"
-            >
-              跳过 / SKIP (S)
-            </button>
-          )}
+          <span className="font-semibold tracking-tight">复习进度：{completedCount} / {initialTotal}</span>
+          <div className="flex items-center gap-4">
+            {history.length > 0 && (
+              <button 
+                onClick={handleUndo}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-brand hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-1"
+                title="按 Z 键撤销上一步操作"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="mr-0.5"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                撤销 / UNDO (Z)
+              </button>
+            )}
+            {queue.length > 1 && (
+              <button 
+                onClick={handleSkip}
+                className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 hover:text-brand hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+                title="按 S 键跳过此题"
+              >
+                跳过 / SKIP (S)
+              </button>
+            )}
+          </div>
           <span className="font-mono font-semibold">{progress}%</span>
         </div>
         <div className="relative h-1 w-full bg-foreground/[0.04] rounded-full overflow-hidden">
@@ -228,6 +300,7 @@ export function TodayClient({ initialQueue }: Props) {
       {/* Mobile spacer to prevent bottom navigation overlap */}
       <div className="h-32 md:h-40 w-full shrink-0" aria-hidden="true" />
     </div>
+  );
 
 
   );
